@@ -9,7 +9,7 @@ rem 日志
 set PYTHON=%~dp0\py310\\python.exe
 rem python程序位置，不使用懒人包可留空
 
-set glm_path=model\chatglm-6b-int4
+set glm_path=model\chatglm-6b-int4-qe
 rem glm模型位置
 
 
