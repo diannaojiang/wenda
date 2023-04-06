@@ -1,3 +1,3 @@
 # /bin/bash
 source setting.sh
-python GLM6BAPI.py
+CUDA_VISIBLE_DEVICES=1 python GLM6BAPI.py

@@ -16,7 +16,7 @@ bot = "Alice"
 
 @route('/static/:name')
 def staticjs(name='-'):
-    return static_file(name, root="views\static")
+    return static_file(name, root="views/static")
 @route('/:name')
 def static(name='-'):
     return static_file(name, root="views")

@@ -11,7 +11,7 @@ mutex = threading.Lock()
 glm_path=os.environ.get('glm_path')
 @route('/static/:name')
 def staticjs(name='-'):
-    return static_file(name, root="views\static")
+    return static_file(name, root="views/static")
 @route('/:name')
 def static(name='-'):
     return static_file(name, root="views")
