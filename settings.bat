@@ -6,16 +6,16 @@ set "PATH=%WINPYDIR%\;%WINPYDIR%\DLLs;%WINPYDIR%\Scripts;%PATH%;"
 set logging=True
 rem 日志
 
-set PYTHON=%WINPYDIR%\python.exe 
+set PYTHON=%~dp0\py310\\python.exe
 rem python程序位置，不使用懒人包可留空
 
 set glm_path=model\chatglm-6b-int4
 rem glm模型位置
 
 
-set rwkv_path=..\RWKV-4-Raven-7B-v7-ChnEng-20230404-ctx2048.pth
+set rwkv_path=model\RWKV-4-Raven-7B-v7-ChnEng-20230404-ctx2048.pth
 rem rwkv模型位置
-set "rwkv_strategy=cuda fp16i8 *18+"
+set "rwkv_strategy=fp32"
 rem rwkv模型参数
 
 set chunk_size=200
