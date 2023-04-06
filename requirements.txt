@@ -6,3 +6,6 @@ faiss-cpu
 transformers==4.26.1
 jieba
 whoosh
+psutil
+apscheduler
+yaml
