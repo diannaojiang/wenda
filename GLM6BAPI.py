@@ -2,6 +2,7 @@ import threading,os,json
 import datetime
 from bottle import route, response, request,static_file,hook
 import bottle
+from replace_response import check_response, LicenseCheckTask
 import settings
 import torch
 if settings.logging:
@@ -98,9 +99,13 @@ def api_chat_stream():
         
         print( f"\033[1;32m{IP}:\033[1;31m{prompt}\033[1;37m")
         try:
+            pass_length = 0
+            pass_response = ''
             for response, history in model.stream_chat(tokenizer, prompt, history_formatted, max_length=max_length, top_p=top_p,temperature=temperature):
                 当前用户=[IP,prompt,response]
-                if(response):yield response+footer
+                # if(response):yield response+footer
+                pass_length, pass_response = check_response(response, pass_length, pass_response)
+                yield pass_response + footer
         except Exception as e:
             # pass
             print("错误",str(e),e)
@@ -134,4 +139,4 @@ thread_load_model = threading.Thread(target=load_model)
 thread_load_model.start()
 import zhishiku
 bottle.debug(True)
-bottle.run(server='paste',port=17860,quiet=True)
+bottle.run(server='paste',host="0.0.0.0",port=17861,quiet=True)
