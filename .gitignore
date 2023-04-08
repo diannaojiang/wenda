@@ -1,9 +1,10 @@
 __pycache__
 model
-WPy64-31090
+WPy64-38100
 testdb.db
 *.7z
 sy
+xw
 txt
 *.001
 *.002
@@ -11,7 +12,8 @@ txt
 cpu
 新建文件夹
 txt1
-
+txt_out
+record.db
 # virtual environment
 /venv/
 venv.bat

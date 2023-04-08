@@ -3,10 +3,10 @@ import datetime
 from bottle import route, response, request,static_file,hook
 import bottle
 from replace_response import check_response, LicenseCheckTask
-import settings
+from plugins import settings
 import torch
 if settings.logging:
-    from defineSQL import session_maker, 记录
+    from plugins.defineSQL import session_maker, 记录
 mutex = threading.Lock()
 glm_path=os.environ.get('glm_path')
 @route('/static/<path:path>')
@@ -98,16 +98,17 @@ def api_chat_stream():
             response_d=zhishiku.find(keyword)
             output_sources = [i['title'] for i in response_d]
             results ='\n---\n'.join([i['content'] for i in response_d])
-            prompt=  f'system:根据以下资料, 用中文回答问题\n\n'+results+'\nuser:'+prompt
+            prompt=  'system:结合以下文段, 用中文回答用户问题。如果无法从中得到答案，忽略文段内容并用中文回答用户问题。\n\n'+results+'\nuser:'+prompt
             footer=  "\n来源：\n"+('\n').join(output_sources)+'///'
         yield footer
         
-        print( f"\033[1;32m{IP}:\033[1;31m{prompt}\033[1;37m")
+        print( "\033[1;32m"+IP+":\033[1;31m"+prompt+"\033[1;37m")
         try:
             pass_length = 0
             pass_response = ''
             for response, history in model.stream_chat(tokenizer, prompt, history_formatted, max_length=max_length, top_p=top_p,temperature=temperature):
                 当前用户=[IP,prompt,response]
+                # print(history)
                 # if(response):yield response+footer
                 pass_length, pass_response = check_response(response, pass_length, pass_response)
                 yield pass_response + footer
@@ -139,9 +140,16 @@ def load_model():
     model = model.cuda()
     model = model.eval()
     mutex.release()
+    torch.cuda.empty_cache() 
     print("模型加载完成")
 thread_load_model = threading.Thread(target=load_model)
 thread_load_model.start()
-import zhishiku
+zhishiku=None
+def load_zsk():
+    global zhishiku
+    zhishiku=settings.load_zsk()
+    print("知识库加载完成")
+thread_load_zsk = threading.Thread(target=load_zsk)
+thread_load_zsk.start()
 bottle.debug(True)
 bottle.run(server='paste',host="0.0.0.0",port=17861,quiet=True)
