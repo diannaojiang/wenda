@@ -94,7 +94,7 @@ def api_chat_stream():
         if use_zhishiku:
             if keyword is None:
                 keyword=prompt
-            print(keyword)
+            # print(keyword)
             response_d=zhishiku.find(keyword)
             output_sources = [i['title'] for i in response_d]
             results ='\n---\n'.join([i['content'] for i in response_d])
@@ -136,6 +136,9 @@ def load_model():
     from transformers import AutoModel, AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(settings.glm_path, local_files_only=True, trust_remote_code=True)
     model = AutoModel.from_pretrained(settings.glm_path, local_files_only=True, trust_remote_code=True)
+    if not glm_lora_path == '':
+        from peft import PeftModel
+        model = PeftModel.from_pretrained(model, glm_lora_path)
     model = model.half()
     model = model.cuda()
     model = model.eval()
