@@ -5,11 +5,14 @@ set "PATH=%WINPYDIR%\;%WINPYDIR%\DLLs;%WINPYDIR%\Scripts;%PATH%;"
 set logging=True
 rem 日志
 
-set PYTHON=%~dp0\py310\\python.exe
-rem python程序位置，不使用懒人包可留空
+set PYTHON=%WINPYDIR%\python.exe 
+rem python程序位置，不使用改为本地路径
 
 set glm_path=model\chatglm-6b
 rem glm模型位置
+
+set glm_int_four=false
+rem glm int4量化，如果已经是量化模型或不需要量化，不要开启
 
 set glm_lora_path=
 rem glm模型微调权重目录路径  为空则不加载LoRA
@@ -33,7 +36,7 @@ set llm_type=glm6b
 rem  LLM模型类型:glm6b、rwkv
 
 set zsk_type=s
-rem  知识库类型:s->传统索引；x->基于Sentence  Transformer 的向量数据库
+rem  知识库类型:s→传统索引；x→基于Sentence  Transformer 的向量数据库
 
 set embeddings_path=model\simcse-chinese-roberta-wwm-ext
 rem embeddings模型位置

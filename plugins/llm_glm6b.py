@@ -1,4 +1,5 @@
 from plugins import settings
+import os
 def chat_init(history):
     history_formatted = None
     if history is not None:
@@ -24,10 +25,13 @@ def load_model():
     from transformers import AutoModel, AutoTokenizer
     tokenizer = AutoTokenizer.from_pretrained(settings.glm_path, local_files_only=True, trust_remote_code=True)
     model = AutoModel.from_pretrained(settings.glm_path, local_files_only=True, trust_remote_code=True)
-    if not settings.glm_lora_path == '':
+    if not (settings.glm_lora_path == '' or settings.glm_lora_path == None) :
         print('glm_lora_path模型地址',settings.glm_lora_path)
         from peft import PeftModel
         model = PeftModel.from_pretrained(model, settings.glm_lora_path)
+    if bool(os.environ.get('glm_int_four')):
+        print("glm int4量化中，如果已经是量化模型或不需要量化，不要开启")
+        model = model.quantize(4)
     model = model.half()
     model = model.cuda()
     model = model.eval()
