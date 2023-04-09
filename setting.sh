@@ -35,7 +35,7 @@ export embeddings_path="model/simcse-chinese-roberta-wwm-ext"
 export vectorstore_path="xw"
 # vectorstore保存位置
 
-export chunk_size=400
+export chunk_size=200
 # chunk_size
 
 export chunk_count=3
