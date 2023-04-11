@@ -11,7 +11,7 @@ rem WebUI 默认启动端口号
 set "PYTHON=%WINPYDIR%\python.exe "
 rem python程序位置，不使用改为本地路径
 
-set glm_path=model\chatglm-6b
+set glm_path=model\chatglm-6b-int4
 rem glm模型位置
 
 
@@ -19,20 +19,20 @@ set "glm_strategy=cuda fp16"
 
 
 rem glm 模型参数  支持：
+rem "cpu fp32"  所有glm模型 要直接跑在cpu上都可以使用这个参数
+rem "cpu fp32i8" fp16原生模型 要自行量化为int8跑在cpu上可以使用这个参数
+rem "cpu fp32i4" fp16原生模型要 自行量化为int4跑在cpu上可以使用这个参数
 rem "cuda fp16"  所有glm模型 要直接跑在gpu上都可以使用这个参数
 rem "cuda fp16i8"  fp16原生模型 要自行量化为int8跑在gpu上可以使用这个参数
 rem "cuda fp16i4"  fp16原生模型 要自行量化为int4跑在gpu上可以使用这个参数
-rem "cpu fp32"  所有glm模型 要直接跑在cpu上都可以使用这个参数
-rem "cpu fp16i8" fp16原生模型 要自行量化为int8跑在cpu上可以使用这个参数
-rem "cpu fp16i4" fp16原生模型要 自行量化为int4跑在cpu上可以使用这个参数
     
 set glm_lora_path=
 rem glm模型微调权重目录路径  为空则不加载LoRA
 
-set rwkv_path=model\RWKV-4-Raven-7B-v7-ChnEng-20230404-ctx2048.pth
+set rwkv_path=..\RWKV-4-Raven-7B-v7-ChnEng-20230404-ctx2048.pth
 rem rwkv模型位置
 
-set "rwkv_strategy=cuda fp16"
+set "rwkv_strategy=cuda fp16i8 *18+"
 rem rwkv模型参数
 
 set rwkv_lora_path=""
