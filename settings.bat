@@ -47,7 +47,15 @@ set llm_type=glm6b
 rem  LLM模型类型:glm6b、rwkv
 
 set zsk_type=bing
-rem  知识库类型:s→传统索引；x→基于Sentence  Transformer 的向量数据库；bing→bing搜索
+rem  知识库类型:
+rem  s→传统索引
+rem  x→基于Sentence  Transformer 的向量数据库
+rem  bing→cn.bing搜索，仅国内可用
+rem  bingxs→cn.bing学术搜索，仅国内可用
+
+
+set zsk_folder=zsk
+rem  知识库的文件夹目录名称，若留空则为txt
 
 set embeddings_path=model\simcse-chinese-roberta-wwm-ext
 rem embeddings模型位置
@@ -60,3 +68,4 @@ rem chunk_size
 
 set chunk_count=5
 rem chunk_count
+
