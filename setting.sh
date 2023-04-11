@@ -8,7 +8,7 @@ export PYTHON="/mnt/data/anaconda3/envs/ChatCBM/bin/python"
 export glm_path="model/chatglm-6b"
 # glm模型位置
 
-export glm_strategy="cuda fp16"
+export glm_strategy="cuda fp16i8"
 # glm 模型参数  支持：
 # "cuda fp16"  所有glm模型 要直接跑在gpu上都可以使用这个参数
 # "cpu fp32"  所有glm模型 要直接跑在cpu上都可以使用这个参数
