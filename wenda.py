@@ -122,7 +122,7 @@ def api_chat_box():
             yield "data: %s\n\n" %"[DONE]"
         except Exception as e:
             error = str(e)
-            print("错误", settings.red, error, settings.white, e)
+            print("错误", settings.red, error, settings.white)
             response_text = ''
         torch.cuda.empty_cache()
     if response_text == '':
@@ -178,7 +178,7 @@ def api_chat_stream():
                 yield pass_response + footer
         except Exception as e:
             error = str(e)
-            print("错误", settings.red, error, settings.white, e)
+            print("错误", settings.red, error, settings.white)
             response = ''
         torch.cuda.empty_cache()
     if response == '':
