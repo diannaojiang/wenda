@@ -17,7 +17,7 @@ def find(search_query):
     tr4w.analyze(text=search_query, lower=True, window=2) 
     search_query=' '.join([i['word'] for i in tr4w.get_keywords(20, word_min_len=1)])
     print("关键词：",search_query)
-    url = 'http://127.0.0.1:8080/json/?q={}&num=10&sort=score.desc&lang=zh_CN'.format(search_query)
+    url = 'http://192.168.1.3:15461/json/?q={}&num=10&sort=score.desc&lang=zh_CN'.format(search_query)
     res = session.get(url, headers=headers, proxies=proxies)
     r = res.json()
     r=r["response"]['result']
