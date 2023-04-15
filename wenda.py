@@ -33,8 +33,8 @@ def load_LLM():
 
 
 LLM = load_LLM()
-
-if settings.Logging:
+Logging=bool(settings.Logging == 'True')
+if Logging:
     from plugins.defineSQL import session_maker, 记录
 mutex = threading.Lock()
 
@@ -47,6 +47,9 @@ def staticjs(path='-'):
 @route('/:name')
 def static(name='-'):
     return static_file(name, root="views")
+@route('/readconfig')
+def readconfig():
+    return static_file(os.environ['wenda_'+'Config'], root="")
 
 
 @route('/')
@@ -190,8 +193,7 @@ def api_chat_stream():
             results = '\n---\n'.join([i['content'] for i in response_d])
             prompt = 'system:学习以下文段, 用中文回答用户问题。如果无法从中得到答案，忽略文段内容并用中文回答用户问题。\n\n' + \
                 results+'\nuser:'+prompt
-               
-            if settings.library.Show_Soucre:
+            if bool(settings.library.Show_Soucre == 'True'):
                 footer = "\n### 来源：\n"+('\n').join(output_sources)+'///'
 
         yield footer
@@ -213,7 +215,7 @@ def api_chat_stream():
     if response == '':
         yield "发生错误，正在重新加载模型"+error+'///'
         os._exit(0)
-    if settings.logging:
+    if Logging:
         with session_maker() as session:
             jl = 记录(时间=datetime.datetime.now(), IP=IP, 问=prompt, 答=response)
             session.add(jl)
@@ -248,7 +250,7 @@ def load_zsk():
         print(settings.green, "知识库加载完成", settings.white)
     except Exception as e:
         print("知识库加载失败，请阅读说明：https://github.com/l15y/wenda")
-        raise  e
+        raise e
 
 
 thread_load_zsk = threading.Thread(target=load_zsk)

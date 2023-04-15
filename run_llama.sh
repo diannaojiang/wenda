@@ -5,9 +5,9 @@ PYTHON=""
 while true
 do
     if [ -z "$PYTHON" ]; then
-        CUDA_VISIBLE_DEVICES=1 python wenda.py -t glm6b -p 17861
+        python wenda.py -t llama
     else
-        CUDA_VISIBLE_DEVICES=1 $PYTHON wenda.py -t glm6b -p 17861
+        $PYTHON wenda.py -t llama
     fi
 sleep 1
 done
