@@ -26,7 +26,7 @@
             </property>
             <property>
                 <name>Strategy</name>
-                <value>cuda fp16i8 *18+</value>
+                <value>cuda fp16</value>
                 <description>rwkv模型参数</description>
             </property>
         </RWKV>
