@@ -3,7 +3,7 @@
     <General>
         <property>
             <name>Logging</name>
-            <value>False</value>
+            <value>True</value>
             <description>日志</description>
         </property>
         <property>
@@ -21,7 +21,7 @@
         <RWKV>
             <property>
                 <name>Path</name>
-                <value>model/RWKV-4-Raven-7B-v9.pth</value>
+                <value>model/RWKV-4-Raven-7B-v9-Eng49%-Chn50%-Other1%-20230414-ctx4096.pth</value>
                 <description>rwkv模型位置</description>
             </property>
             <property>
@@ -33,7 +33,7 @@
         <GLM6B>
             <property>
                 <name>Path</name>
-                <value>model/chatglm-6b-int4</value>
+                <value>model/chatglm-6b</value>
                 <description>glm模型位置</description>
             </property>
             <property>
@@ -125,7 +125,7 @@
             </property>
             <property>
                 <name>Fess_Host</name>
-                <value>127.0.0.1:8080</value>
+                <value>192.168.1.3:15461</value>
                 <description>Fess搜索引擎的部署地址</description>
             </property>
         </FESS>
