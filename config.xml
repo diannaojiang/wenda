@@ -80,7 +80,7 @@
         </property>
         <property>
             <name>Show_Soucre</name>
-            <value>False</value>
+            <value>True</value>
             <description>知识库显示来源</description>
         </property>
         <property>
@@ -108,12 +108,12 @@
             </property>
             <property>
                 <name>Academic</name>
-                <value>True</value>
+                <value>False</value>
                 <description>是否使用必应学术</description>
             </property>
             <property>
                 <name>Searc_Site</name>
-                <value>www.12371.cn</value>
+                <value></value>
                 <description>cn.bing站内搜索网址: 共产党员网,留空不使用</description>
             </property>
         </BING>
