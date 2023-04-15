@@ -30,7 +30,7 @@ rem "cpu fp16i4" fp16原生模型要 自行量化为int4跑在cpu上可以使用这个参数
 set glm_lora_path=
 rem glm模型微调权重目录路径  为空则不加载LoRA
 
-set rwkv_path=..\RWKV-4-Raven-7B-v7-ChnEng-20230404-ctx2048.pth
+set rwkv_path=..\RWKV-4-Raven-7B-v9.pth
 rem rwkv模型位置
 
 set "rwkv_strategy=cuda fp16i8 *18+"
@@ -58,10 +58,10 @@ rem  建标库
 set site=www.12371.cn
 rem  共产党员网
 
-set "zsk_strategy=bing:3 fess:2"
+set "zsk_strategy=fess:2 bing:5"
 rem 知识库融合参数
 
-set zsk_show_soucre=0
+set zsk_show_soucre=1
 rem  知识库显示来源
 
 set zsk_folder=zsk

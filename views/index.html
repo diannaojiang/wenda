@@ -58,6 +58,7 @@
 			max-width: 80%;
 			margin: 0 10px;
 			word-break: break-word;
+			line-height: 1;
 		}
 
 		.ask {
@@ -87,13 +88,15 @@
 			z-index: 1;
 			width: 100%;
 		}
-		footer{
-			padding-bottom: 54px!important;
+
+		footer {
+			padding-bottom: 54px !important;
 		}
+
 		.v-tabs {
 			position: fixed !important;
 			bottom: 0;
-			z-index: 100;
+			z-index: 3;
 			width: 100%;
 		}
 
@@ -124,13 +127,16 @@
 		}
 
 		.user-avatar {
-			background-color:  #0000a0;
+			background-color: #0000a0;
 		}
 
 		.bot-avatar {
-			background-color:  #7a0099
+			background-color: #7a0099
 		}
 
+		li {
+			line-height: 0.1;
+		}
 	</style>
 </head>
 
@@ -143,7 +149,12 @@
 						<v-list-item-content>
 							<v-list-item-title class="text-h6">
 								CBM Auto
+								<v-btn color="#555" style="right: 1em;position: fixed;" dark size="x-large"
+									@click="对话=[]" :loading="loading">
+									清除历史
+								</v-btn>
 							</v-list-item-title>
+
 							<br>
 							<v-list-item-subtitle>
 								功能选择
@@ -166,12 +177,8 @@
 				<v-switch hide-details color="purple" inset v-model="zhishiku" label="知识库"></v-switch>
 				&nbsp;&nbsp;&nbsp;&nbsp;
 				<v-switch hide-details color="purple" inset v-model="历史对话" label="历史"></v-switch>
-				&nbsp;&nbsp;&nbsp;&nbsp;
-				<v-btn color="#555"  dark size="x-large"
-				 @click="对话=[]"
-				:loading="loading">
-				清除历史
-			</v-btn>
+
+
 			</v-toolbar>
 			<br><br><br>
 
@@ -330,7 +337,7 @@
 					lsdh(false)//关闭历史对话
 					let Q = app.问题
 					resp = await send("根据以下主题，写一篇论文提纲：" +
-						Q)
+						Q, Q)
 					app.max_length = 4096
 					resps = resp.split("\n\n")
 					for (i in resps) {
@@ -401,6 +408,7 @@
 			localStorage["对话历史"] = JSON.stringify(app.对话)
 		}
 		中断 = () => {
+			auto_stoped = true
 			controller.abort()
 			controller = new AbortController();
 			signal = controller.signal;
@@ -412,10 +420,12 @@
 				app.会话模式.问题()
 			} else {
 
-				send(app.问题, app.会话模式.问题)
+				send(app.会话模式.问题 + app.问题, app.问题)
 			}
 		}
-		send = async (s, 会话模式 = "") => {
+		send = async (s, keyword = "") => {
+			if (keyword == "") keyword = s
+			auto_stoped = false
 			app.loading = true
 			let QA_history
 			if (app.历史对话) {
@@ -443,8 +453,8 @@
 					signal: signal,
 					method: 'post',
 					body: JSON.stringify({
-						prompt: 会话模式 + app.问题,
-						keyword: app.问题,
+						prompt: app.问题,
+						keyword: keyword,
 						temperature: app.temperature,
 						top_p: app.top_p,
 						max_length: app.max_length,
@@ -479,7 +489,12 @@
 			app.loading = false
 			已排队到 = true
 			保存()
+			if (auto_stoped)
+				throw new MyException("已中断")
 			return 当前会话.content
+		}
+		function MyException(message) {
+			this.message = message;
 		}
 		read_now = async () => {
 			if (!已排队到) {
@@ -506,9 +521,9 @@
 			app.知识库 = json
 		}
 		function md2html(conent) {
-			return conent
-			// let md = new markdownit();
-			// return md.render(conent).replace(/<a /g, '<a target="_blank"')
+			// return conent
+			let md = new markdownit();
+			return md.render(conent).replace(/<a /g, '<a target="_blank"')
 		}
 		zsk = (b) => {
 			app.zhishiku = b
