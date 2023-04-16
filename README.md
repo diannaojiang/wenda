@@ -82,6 +82,43 @@ fess模式、bing模式、bingxs模式、 bingsite模式均调用搜索引擎搜
 18. 此时fess就在爬取文件的名字和内容. 可以在资源管理器看到cpu有负载
 19. 挂机。等待爬取完成即可尝试搜索关键词
 
+### linux系统fess使用
+1. 安装JDK 
+```
+wget https://download.java.net/java/17/latest/jdk-17_linux-x64_bin.tar.gz
+sudo tar xvf jdk-17_linux-x64_bin.tar.gz -C /usr/local/
+```
+解压后，JDK 17 将被安装在 /usr/local/jdk-17 目录中。
+
+配置环境变量。要在系统中使用 JDK 17，您需要将其添加到 PATH 环境变量中。您可以使用以下命令将其添加到 /etc/profile 文件中：
+
+```
+ rm -f /etc/alternatives/java
+ ln -s /usr/local/jdk-17.0.6/bin/java /etc/alternatives/java
+     echo export JAVA_HOME=/usr/local/jdk-17.0.6 >>/etc/profile
+     echo export PATH='$PATH':'$JAVA_HOME'/bin >>/etc/profile
+     echo export CLASSPATH=.:'$JAVA_HOME'/lib/dt.jar:'$JAVA_HOME'/lib/tools.jar >>/etc/profile
+     source /etc/profile
+```
+确认安装。您可以使用以下命令检查 JDK 17 是否已成功安装：
+```
+java -version
+```
+如果一切正常，您应该会看到类似以下内容的输出：
+
+openjdk version "17.0.1" 2021-10-19
+OpenJDK Runtime Environment (build 17.0.1+12-39)
+OpenJDK 64-Bit Server VM (build 17.0.1+12-39, mixed mode, sharing)
+
+2. 安装fess
+下载fess
+解压fess
+```
+unzip fess-14.7.0.zip
+cd bin
+ ./fess -d
+```
+
 ####  调试工具
 ![](imgs/zsk-test.png)
 ####  chatGLM-6B模型
@@ -117,10 +154,16 @@ fess模式、bing模式、bingxs模式、 bingsite模式均调用搜索引擎搜
 编译好的：https://github.com/l15y/llama-cpp-python/releases
 
 模型位置等参数：修改`config.xml`。
-## 二次开发
-1. 兼容chatbox的api：http://127.0.0.1:17860/chat/completions
-2. 浏览器前端闻达Auto开发函数：
+## 闻达Auto
 ![](imgs/autogpt.png)
+
+[闻达auto油猴脚本形式示例](https://github.com/l15y/wenda/tree/main/%E9%97%BB%E8%BE%BEauto%E6%B2%B9%E7%8C%B4%E8%84%9A%E6%9C%AC%E5%BD%A2%E5%BC%8F%E7%A4%BA%E4%BE%8B)
+
+特别推荐：[rwkv写论文脚本升级版-作者：FIGHTZERO.user.js](https://github.com/l15y/wenda/blob/main/%E9%97%BB%E8%BE%BEauto%E6%B2%B9%E7%8C%B4%E8%84%9A%E6%9C%AC%E5%BD%A2%E5%BC%8F%E7%A4%BA%E4%BE%8B/rwkv%E5%86%99%E8%AE%BA%E6%96%87%E8%84%9A%E6%9C%AC%E5%8D%87%E7%BA%A7%E7%89%88-%E4%BD%9C%E8%80%85%EF%BC%9AFIGHTZERO.user.js)
+
+结果展示：[rwkv写论文生成效果.txt](https://github.com/l15y/wenda/blob/main/%E9%97%BB%E8%BE%BEauto%E6%B2%B9%E7%8C%B4%E8%84%9A%E6%9C%AC%E5%BD%A2%E5%BC%8F%E7%A4%BA%E4%BE%8B/rwkv写论文生成效果.txt)
+## 二次开发
+兼容chatbox的api：http://127.0.0.1:17860/chat/completions
 ## TODO
 实现以下知识库模组：
 ```
