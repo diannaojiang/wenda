@@ -67,6 +67,20 @@ def readconfig():
 def readxml():
     with open(os.environ['wenda_'+'Config'],encoding = "utf-8") as f:
         return f.read()
+@route('/plugins')
+def read_auto_plugins():
+    response.set_header("Pragma", "no-cache")
+    response.add_header("Cache-Control", "must-revalidate")
+    response.add_header("Cache-Control", "no-cache")
+    response.add_header("Cache-Control", "no-store")
+    plugins=[]
+    for root, dirs, files in os.walk("views/plugins"):
+        for file in files:
+            if(file.endswith(".js")):
+                file_path = os.path.join(root, file)
+                with open(file_path, "r", encoding='utf-8') as f:
+                    plugins.append( f.read())
+    return "\n".join(plugins)
 # @route('/writexml', method='POST')
 # def writexml():
     # data = request.json
@@ -88,9 +102,12 @@ def index():
 
 当前用户 = None
 
-
 @route('/api/chat_now', method='GET')
 def api_chat_now():
+    response.set_header("Pragma", "no-cache")
+    response.add_header("Cache-Control", "must-revalidate")
+    response.add_header("Cache-Control", "no-cache")
+    response.add_header("Cache-Control", "no-store")
     return '当前状态：'+当前用户[0]
 
 

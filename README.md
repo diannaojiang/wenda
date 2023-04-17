@@ -12,7 +12,7 @@
 
 **欢迎同学们制作教学视频、懒人包等，做好请和我联系，我会把相关链接加到readme里**
 
-**交流QQ群：162451840**
+**交流QQ群：162451840（已满）；241773574**
 ##  截图
 #### 设置和预设功能
 ![](imgs/setting.png)
@@ -42,8 +42,6 @@
 
 ### 3.参数设置
 根据`config.xml`中说明，填写你的模型下载位置等信息
-### 4.生成知识库
-将txt格式的语料放到txt文件夹中，运行`run_data_processing.bat`。
 ## 知识库
 知识库原理是生成一些提示信息，会插入到对话里面。
 
@@ -155,7 +153,11 @@ cd bin
 
 模型位置等参数：修改`config.xml`。
 ## 闻达Auto
-![](imgs/autogpt.png)
+![](imgs/auto1.jpg)
+![](imgs/auto2.jpg)
+![](imgs/auto3.jpg)
+[闻达auto增强知识库](https://github.com/l15y/wenda/tree/main/%E9%97%BB%E8%BE%BEauto%E6%B2%B9%E7%8C%B4%E8%84%9A%E6%9C%AC%E5%BD%A2%E5%BC%8F%E7%A4%BA%E4%BE%8B/知识库增强.js)
+先根据不同关键词搜索结果给出粗略回答，再提炼各次回答给出最终回答
 
 [闻达auto油猴脚本形式示例](https://github.com/l15y/wenda/tree/main/%E9%97%BB%E8%BE%BEauto%E6%B2%B9%E7%8C%B4%E8%84%9A%E6%9C%AC%E5%BD%A2%E5%BC%8F%E7%A4%BA%E4%BE%8B)
 
