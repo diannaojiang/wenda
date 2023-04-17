@@ -75,7 +75,7 @@
     <Library>
         <property>
             <name>Type</name>
-            <value>mix</value>
+            <value>fess</value>
             <description>知识库类型:
                 bing → cn.bing搜索，仅国内可用
                 fess → fess搜索引擎
