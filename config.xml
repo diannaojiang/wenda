@@ -143,22 +143,22 @@
             </property>
             <property>
                 <name>Size</name>
-                <value>80</value>
+                <value>200</value>
                 <description>分块大小</description>
             </property>
             <property>
                 <name>Overlap</name>
-                <value>10</value>
+                <value>50</value>
                 <description>分块重叠长度</description>
             </property>
             <property>
                 <name>Count</name>
-                <value>5</value>
+                <value>1</value>
                 <description>知识库抽取数量</description>
             </property>
             <property>
                 <name>Device</name>
-                <value>cpu</value>
+                <value>cuda</value>
                 <description>faiss运行设备</description>
             </property>
         </ST>
