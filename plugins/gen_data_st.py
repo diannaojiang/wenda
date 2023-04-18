@@ -33,6 +33,7 @@ if not os.path.exists(target_folder_path):
 
 root_path_list = source_folder_path.split(os.sep)
 
+print("预处理数据")
 for root, dirs, files in os.walk(source_folder_path):
     path_list = root.split(os.sep)
     for file in files:
@@ -57,7 +58,6 @@ for root, dirs, files in os.walk(source_folder_path):
             f.write(data)
             f.close()
 
-print("开始读取数据")
 loader = DirectoryLoader(target_folder, glob='**/*.txt')
 docs = loader.load()
 # text_splitter = TokenTextSplitter(chunk_size=500, chunk_overlap=15)
