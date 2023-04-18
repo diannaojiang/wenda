@@ -75,11 +75,12 @@
     <Library>
         <property>
             <name>Type</name>
-            <value>fess</value>
+            <value>st</value>
             <description>知识库类型:
                 bing → cn.bing搜索，仅国内可用
                 fess → fess搜索引擎
                 mix → 知识库融合,需设置参数
+                st → sentence_transformers,内测版本
                 kg → 知识图谱,暂未启用
             </description>
         </property>
@@ -134,6 +135,13 @@
                 <description>Fess搜索引擎的部署地址</description>
             </property>
         </FESS>
+        <ST>
+            <property>
+                <name>Count</name>
+                <value>5</value>
+                <description>知识库抽取数量(TODO)</description>
+            </property>
+        </ST>
         <KG>
             <property>
                 <name>Count</name>
