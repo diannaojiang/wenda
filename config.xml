@@ -75,7 +75,7 @@
     <Library>
         <property>
             <name>Type</name>
-            <value>st</value>
+            <value>mix</value>
             <description>知识库类型:
                 bing → cn.bing搜索，仅国内可用
                 fess → fess搜索引擎
@@ -97,7 +97,7 @@
         <MIX>
             <property>
                 <name>Strategy</name>
-                <value>fess:5 bing:5</value>
+                <value>st:3 bing:5</value>
                 <description>知识库融合参数</description>
             </property>
             <property>
@@ -167,6 +167,33 @@
                 <description>faiss运行设备</description>
             </property>
         </ST>
+        <QDRANT>
+            <property>
+                <name>Path</name>
+                <value>txt</value>
+                <description>知识库文本路径</description>
+            </property>
+            <property>
+                <name>Model_Path</name>
+                <value>model/text2vec-large-chinese</value>
+                <description>向量模型存储路径</description>
+            </property>
+            <property>
+                <name>Qdrant_Host</name>
+                <value>http://localhost:6333</value>
+                <description>qdrant服务地址</description>
+            </property>
+            <property>
+                <name>Device</name>
+                <value>cpu</value>
+                <description>qdrant运行设备</description>
+            </property>
+            <property>
+                <name>Collection</name>
+                <value>qa_collection</value>
+                <description>qdrant集合名称</description>
+            </property>
+        </QDRANT>
         <KG>
             <property>
                 <name>Count</name>

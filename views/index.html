@@ -51,7 +51,7 @@
 		.ask,
 		.answer {
 			padding: 1em;
-			background: #0003;
+			background: #0001;
 			border-radius: 16px;
 			max-width: 80%;
 			margin: 0 10px;
@@ -73,7 +73,7 @@
 		.v-application--wrap {
 			background: transparent;
 			min-height: 100%;
-			background: #cecece0a;
+			/* background: #cecece0a; */
 		}
 
 		.float {
@@ -122,16 +122,20 @@
 		}
 
 		.user-avatar {
-			background-color: #0000a0;
+			background-color: #0000a0dd;
 		}
 
 		.bot-avatar {
-			background-color: #7a0099
+			background-color: #7a0099dd
 		}
 
+		.v-application p {
+			margin-bottom: 10px;
+			white-space: break-spaces;
+		}
 
 		.v-application ul {
-			margin-top: -1.2em;
+			margin-top: -0.5em;
 		}
 
 		.v-application a {
@@ -153,9 +157,9 @@
 					<v-list-item>
 						<v-list-item-content>
 							<v-list-item-title class="text-h6">
-								CBM Auto
-								<v-btn color="#555" style="right: 1em;position: fixed;" dark size="x-large"
-									@click="对话=[]" :loading="loading">
+								闻达 Auto
+								<v-btn color="#555" style="right: 1em;position: fixed;z-index: 1;" dark size="x-large"
+									@click="对话=[];保存()" :loading="loading">
 									清除历史
 								</v-btn>
 							</v-list-item-title>
@@ -178,7 +182,7 @@
 			<v-toolbar float dark>
 				<v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 				<v-toolbar-title><a style="text-decoration: none;color: white;"
-					href="https://github.com/l15y/wenda">ChatCBM</a></v-toolbar-title>
+						href="https://github.com/l15y/wenda">ChatCBM</a></v-toolbar-title>
 				<v-spacer></v-spacer>
 				<v-switch hide-details color="purple" inset v-model="zhishiku" label="知识库"></v-switch>
 				&nbsp;&nbsp;&nbsp;&nbsp;
@@ -236,7 +240,18 @@
 					</v-footer>
 				</v-tab-item>
 				<v-tab-item key="知识库">
-					<v-btn color="purple" dark size="x-large" @click="find(prompt())">
+					<br>
+					<v-row>
+						<v-col cols="12" sm="6">
+							<v-text-field v-model="test_zsk_prompt" outlined label="关键词" clearable></v-text-field>
+
+						</v-col>
+						<v-col cols="12" sm="6">
+							<v-text-field v-model="test_zsk_step" outlined label="上下文数量" clearable></v-text-field>
+
+						</v-col>
+					</v-row>
+					<v-btn color="purple" dark size="x-large" @click="find(test_zsk_prompt,test_zsk_step)">
 						测试
 					</v-btn>
 					<v-data-table :headers="[{ text: '来源', value: 'title' },{ text: '内容', value: 'content' },]"
@@ -251,7 +266,7 @@
 								</v-text-field>
 							</template>
 						</v-slider>
-						<v-slider :min="0" :max="1" :step="0.1" v-model="temperature" thumb-color="purple"
+						<v-slider :min="0" :max="2" :step="0.1" v-model="temperature" thumb-color="purple"
 							label="temperature" thumb-label><template v-slot:append>
 								<v-text-field v-model="temperature" class="mt-0 pt-0" type="number" style="width: 60px">
 								</v-text-field>
@@ -306,6 +321,8 @@
 					描述: "输入问题",
 					问题: "",
 				},
+				test_zsk_prompt: "",
+				test_zsk_step: 1,
 				知识库: [],
 				设置: {},
 				tab: '对话',
@@ -313,6 +330,7 @@
 				temperature: 0.8,
 				max_length: 2048,
 				top_p: 0.8,
+				llm_type: "",
 				snackbar: false,
 				snackbar_text: '',
 				loading: false,
@@ -436,11 +454,12 @@
 			}
 		}
 
-		find = async (s) => {
+		find = async (s, step = 1) => {
 			response = await fetch("/api/find", {
 				method: 'post',
 				body: JSON.stringify({
-					prompt: s
+					prompt: s,
+					step: step
 				}),
 				headers: {
 					'Content-Type': 'application/json'
@@ -455,7 +474,7 @@
 			// return conent
 			conent = String(conent)
 			let md = new markdownit();
-			md.disable([ 'link', 'image' ])
+			md.disable(['link', 'image'])
 			return md.render(conent).replace(/<a /g, '<a target="_blank"')
 		}
 		zsk = (b) => {
@@ -466,6 +485,7 @@
 		}
 	</script>
 	<script src="plugins"></script>
+	<script src="llm"></script>
 </body>
 
 </html>
