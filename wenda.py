@@ -159,7 +159,7 @@ def api_find():
     prompt = data.get('prompt')
     step = data.get('step')
     if step is None:
-        step = 1
+        step = 0
     return json.dumps(zhishiku.find(prompt,int(step)))
 
 
