@@ -96,7 +96,7 @@
         </property>
         <property>
             <name>Step</name>
-            <value>2</value>
+            <value>0</value>
             <description>知识库默认上下文步长</description>
         </property>
         <MIX>
