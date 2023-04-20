@@ -143,7 +143,7 @@
             </property>
             <property>
                 <name>Size</name>
-                <value>200</value>
+                <value>250</value>
                 <description>分块大小</description>
             </property>
             <property>
