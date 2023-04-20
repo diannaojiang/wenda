@@ -224,7 +224,7 @@
 								语音<br>输入
 							</v-btn>
 							<v-btn style="margin: auto;display: flex;" color="purple" fab dark size="x-large"
-								@click="recognition.stop()" :loading="loading" v-if="语音输入中">
+								@click="stop_listen" :loading="loading" v-if="语音输入中">
 								停止<br>输入
 							</v-btn>
 						</div>
@@ -348,7 +348,7 @@
 				test_zsk_step: 1,
 				知识库: [],
 				设置: {},
-				tab: '对话',
+				tab: 0,
 				zhishiku: false,
 				temperature: 0.8,
 				max_length: 2048,
@@ -413,7 +413,7 @@
 			已排队到 = false
 			setTimeout(read_now, 3000)
 			app.问题 = s.replace(/\n+/g, '\n')
-			app.对话.push({ role: "user", content: app.问题 })
+			app.对话.push({ role: "user", content: app.问题.replace(/[\r\n]+/,'\n') })
 			let 当前会话 = { role: "AI", content: '……' }
 			app.对话.push(当前会话)
 			setTimeout(() =>
@@ -517,6 +517,10 @@
 			msg.volume = 1;
 			speechSynthesis.speak(msg)
 		}
+		stop_listen=()=>{
+			recognition.stop()
+			app.loading=true
+		}
 		listen = () => {
 			recognition = new window.webkitSpeechRecognition;
 			let final_transcript = '';
@@ -537,9 +541,11 @@
 					}
 				}
 			};
-			recognition.onerror = function () {
+			recognition.onerror = function (e) {
 				console.log(final_transcript);
-				console.log('======================' + "error" + '======================');
+				alert('语音识别识别提示')
+				app.语音输入中 = false
+				console.log('======================' + "error" + '======================',e);
 			};
 			recognition.onend = function () {
 				console.log(final_transcript);
