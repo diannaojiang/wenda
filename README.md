@@ -1,4 +1,33 @@
 # 闻达：一个大规模语言模型调用平台
+<!--ts-->
+* [闻达：一个大规模语言模型调用平台](#闻达一个大规模语言模型调用平台)
+   * [简介](#简介)
+   * [截图](#截图)
+   * [懒人包](#懒人包)
+   * [自行安装](#自行安装)
+      * [1.安装库](#1安装库)
+      * [2.下载模型](#2下载模型)
+      * [3.参数设置](#3参数设置)
+   * [知识库](#知识库)
+      * [st模式](#st模式)
+      * [win系统fess使用](#win系统fess使用)
+      * [linux系统fess使用](#linux系统fess使用)
+         * [调试工具](#调试工具)
+         * [chatGLM-6B模型](#chatglm-6b模型)
+         * [chatRWKV模型](#chatrwkv模型)
+      * [使用](#使用)
+   * [模型配置](#模型配置)
+      * [chatGLM-6B](#chatglm-6b)
+      * [chatRWKV](#chatrwkv)
+         * [生成小说](#生成小说)
+         * [文字冒险游戏](#文字冒险游戏)
+      * [llama](#llama)
+   * [Auto](#auto)
+
+<!-- Created by https://github.com/ekalinin/github-markdown-toc -->
+<!-- Added by: runner, at: Fri Apr 21 11:14:42 UTC 2023 -->
+
+<!--te-->
 ## 简介
 一个LLM调用平台。旨在通过使用为小模型外挂知识库查找的方式，实现近似于大模型的生成能力。
 1. 目前支持模型：`chatGLM-6B`、`chatRWKV`、`chatYuan`、`llama系列`。
@@ -14,7 +43,6 @@
 
 **交流QQ群：162451840（已满）；241773574**
 ##  截图
-#### 设置和预设功能
 ![](imgs/setting.png)
 ![](imgs/setting2.png)
 
@@ -41,7 +69,7 @@
 ### 2.下载模型
 根据需要，下载对应模型。
 
-建议使用chatRWKV的RWKV-4-Raven-7B-v7-ChnEng-20230404-ctx2048（截止4月6日效果较好），或chatGLM-6B。
+建议使用chatRWKV的RWKV-4-Raven-7B-v10，或chatGLM-6B。
 
 ### 3.参数设置
 根据`config.xml`中说明，填写你的模型下载位置等信息
@@ -60,13 +88,19 @@ fess模式、bing模式、bingxs模式、 bingsite模式均调用搜索引擎搜
 1.   bing模式，cn.bing搜索，仅国内可用
 2.   bingxs模式，cn.bing学术搜索，仅国内可用
 3.   bingsite模式，bing站内搜索，需设置网址
-4.   st模式，sentence_transformers+faiss进行索引、匹配，并连同上下文返回，相当于原先x模式升级版。
+4.   st模式，sentence_transformers+faiss进行索引
+5.   mix模式，融合
+6.   fess模式，本地部署的[fess搜索](https://github.com/codelibs/fess)，效果好于已删除的s、x模式，并使用[letiantian/TextRank4ZH](https://github.com/letiantian/TextRank4ZH)进行了关键词提取
+### st模式
+sentence_transformers+faiss进行索引、匹配，并连同上下文返回，相当于原先x模式升级版。
+
 构建索引运行：plugins/buils_ST_data.bat。
+
 Linux直接使用wenda环境执行```python plugins/gen_data_st.py```
+
 需下载模型[GanymedeNil/text2vec-large-chinese](https://huggingface.co/GanymedeNil/text2vec-large-chinese)置于model文件夹，并将txt格式语料置于txt文件夹。
+
 TODO：在线语料上传、根据字数灵活提供上下文、根据上下文相关性提供上下文。
-6.   mix模式，融合
-7.   fess模式，本地部署的[fess搜索](https://github.com/codelibs/fess)，效果好于已删除的s、x模式，并使用[letiantian/TextRank4ZH](https://github.com/letiantian/TextRank4ZH)进行了关键词提取
 ### win系统fess使用
 1. 懒人包中下载fess-14.7.0-with-jdk.7z
 2. 解压到平时放软件的盘
@@ -134,25 +168,26 @@ cd bin
 ![](imgs/zsk-rwkv.png)
 ### 使用
 正常使用中，勾选右上角知识库
-## chatGLM-6B
+##  模型配置
+### chatGLM-6B
 运行：`run_GLM6B.bat`。
 
 模型位置等参数：修改`config.xml`。
 
 默认参数在GTX1660Ti（6G显存）上运行良好。
 
-## chatRWKV
+### chatRWKV
 运行：`run_rwkv.bat`。
 
 模型位置等参数：修改`config.xml`。
 
 默认参数在GTX1660Ti（6G显存）上正常运行，但速度较慢。
 
-### 生成小说
+#### 生成小说
 ![](imgs/novel.png)
 #### 文字冒险游戏
 ![](imgs/wzmx.png)
-## llama
+### llama
 运行：`run_llama.bat`。
 
 注意库最好使用我修改的：[llama-cpp-python](https://github.com/l15y/llama-cpp-python)，才可以正常使用中文（截止4月15日）。
@@ -160,25 +195,10 @@ cd bin
 编译好的：https://github.com/l15y/llama-cpp-python/releases
 
 模型位置等参数：修改`config.xml`。
-## 闻达Auto
+## Auto
 ![](imgs/auto1.jpg)
 ![](imgs/auto2.jpg)
 ![](imgs/auto3.jpg)
-[闻达auto增强知识库](https://github.com/l15y/wenda/tree/main/%E9%97%BB%E8%BE%BEauto%E6%B2%B9%E7%8C%B4%E8%84%9A%E6%9C%AC%E5%BD%A2%E5%BC%8F%E7%A4%BA%E4%BE%8B/知识库增强.js)
-先根据不同关键词搜索结果给出粗略回答，再提炼各次回答给出最终回答
 
-[闻达auto油猴脚本形式示例](https://github.com/l15y/wenda/tree/main/%E9%97%BB%E8%BE%BEauto%E6%B2%B9%E7%8C%B4%E8%84%9A%E6%9C%AC%E5%BD%A2%E5%BC%8F%E7%A4%BA%E4%BE%8B)
+[auto例程](https://github.com/l15y/wenda/tree/main/autos)
 
-特别推荐：[rwkv写论文脚本升级版-作者：FIGHTZERO.user.js](https://github.com/l15y/wenda/blob/main/%E9%97%BB%E8%BE%BEauto%E6%B2%B9%E7%8C%B4%E8%84%9A%E6%9C%AC%E5%BD%A2%E5%BC%8F%E7%A4%BA%E4%BE%8B/rwkv%E5%86%99%E8%AE%BA%E6%96%87%E8%84%9A%E6%9C%AC%E5%8D%87%E7%BA%A7%E7%89%88-%E4%BD%9C%E8%80%85%EF%BC%9AFIGHTZERO.user.js)
-
-结果展示：[rwkv写论文生成效果.txt](https://github.com/l15y/wenda/blob/main/%E9%97%BB%E8%BE%BEauto%E6%B2%B9%E7%8C%B4%E8%84%9A%E6%9C%AC%E5%BD%A2%E5%BC%8F%E7%A4%BA%E4%BE%8B/rwkv写论文生成效果.txt)
-## 二次开发
-兼容chatbox的api：http://127.0.0.1:17860/chat/completions
-## TODO
-实现以下知识库模组：
-```
-知识图谱
-```
-实现以下模型模组：
-```
-```

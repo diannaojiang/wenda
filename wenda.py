@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser(description='Wenda config')
 parser.add_argument('-c', type=str, dest="Config", default='config.xml', help="配置文件")
 parser.add_argument('-p', type=int, dest="Port", help="使用端口号")
 parser.add_argument('-l', type=bool, dest="Logging", help="是否开启日志")
-parser.add_argument('-t', type=str, dest="LLM_Type", choices=["rwkv", "glm6b", "llama"], help="选择使用的大模型")
+parser.add_argument('-t', type=str, dest="LLM_Type", help="选择使用的大模型")
 args = parser.parse_args()
 print(args)
 os.environ['wenda_'+'Config'] = args.Config 
@@ -51,14 +51,14 @@ def static(name='-'):
 
 from plugins.settings import xml2json,json2xml
 import json
-@route('/readconfig', method=("POST","OPTIONS"))
+@route('/api/readconfig', method=("POST","OPTIONS"))
 def readconfig():
     allowCROS()
     with open(os.environ['wenda_'+'Config'],encoding = "utf-8") as f:
         j=xml2json(f.read(),True,1,1)
         # print(j)
         return json.dumps(j)
-@route('/writeconfig', method=("POST","OPTIONS"))
+@route('/api/writeconfig', method=("POST","OPTIONS"))
 def readconfig():
     allowCROS()
     data = request.json
@@ -71,16 +71,16 @@ def readconfig():
 # def readxml():
 #     with open(os.environ['wenda_'+'Config'],encoding = "utf-8") as f:
 #         return f.read()
-@route('/llm')
+@route('/api/llm')
 def llm_js():
     noCache()
     return static_file('llm_'+settings.LLM_Type+".js", root="plugins")
     
-@route('/plugins')
+@route('/api/plugins')
 def read_auto_plugins():
     noCache()
     plugins=[]
-    for root, dirs, files in os.walk("views/plugins"):
+    for root, dirs, files in os.walk("autos"):
         for file in files:
             if(file.endswith(".js")):
                 file_path = os.path.join(root, file)
@@ -266,6 +266,7 @@ def api_chat_stream():
             error = str(e)
             print("错误", settings.red, error, settings.white)
             response = ''
+            # raise e
         torch.cuda.empty_cache()
     if response == '':
         yield "发生错误，正在重新加载模型"+error+'///'
