@@ -11,7 +11,7 @@ const messages = {
         feature_selection: 'Feature Selection'
     },
     'zh-CN': {
-        wenda: '闻达',
+        wenda: 'CBM',
         zhishiku: "知识库",
         history: "历史",
         send: "发送",
