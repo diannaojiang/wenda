@@ -23,12 +23,12 @@ const messages = {
         re_generate: "重新生成",
         title: "标题",
         content: "内容",
-        real_time_upload_st_zsk:"实时上传ST"
+        input_question:"输入问题",
+        save:"保存"
     }
     ,
 
     'ja': {
-        wenda: 'ウェンダ',
         history: '履歴',
         send: '送信',
         abord: '中止',

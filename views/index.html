@@ -33,13 +33,13 @@
 		/* 滚动条的滑轨背景颜色 */
 
 		.v-navigation-drawer__content::-webkit-scrollbar-thumb {
-			background-color: rgba(0, 0, 0, 0.2);
+			background-color: #7a007c;
 		}
 
 		/* 滑块颜色 */
 
 		.v-navigation-drawer__content::-webkit-scrollbar-button {
-			background-color: #7a007c;
+			display: none;
 		}
 
 		/* 滑轨两头的监听按钮颜色 */
@@ -82,6 +82,10 @@
 			position: absolute !important;
 		}
 
+		.float button {
+			display: block !important;
+		}
+
 		header {
 			position: fixed !important;
 			top: 0;
@@ -120,8 +124,9 @@
 
 		.v-window-item:has(iframe) {
 			margin: 0;
-			
+
 		}
+
 		.v-tab.v-tab {
 			color: inherit;
 			font-weight: bold;
@@ -129,11 +134,11 @@
 		}
 
 		.user-avatar {
-			background-color: #0000a0dd;
+			background-color: #0000a0bb;
 		}
 
 		.bot-avatar {
-			background-color: #7a0099dd
+			background-color: #7a009999
 		}
 
 		.v-application p {
@@ -210,10 +215,16 @@
 								</v-avatar>
 								<br>
 								<v-expand-transition>
-									<v-icon class="float" v-if="hover&&!loading" large text
-										@click="删除 (current_conversation)">
-										mdi-delete
-									</v-icon>
+									<div v-if="hover" class="float">
+										<v-icon v-if="!loading" large text
+											@click="delete_current_conversation(current_conversation)">
+											mdi-delete
+										</v-icon>
+
+										<v-icon large text @click="copy(current_conversation.content)">
+											mdi-content-copy
+										</v-icon>
+									</div>
 								</v-expand-transition>
 							</div>
 						</v-hover>
@@ -222,9 +233,17 @@
 							v-html="md2html(current_conversation.content)"></span>
 					</div>
 					<div v-if="!loading&&chat.length>0">
-						<v-btn size="x-large" style="margin: auto;display: flex;" @click="re_generate()">
-							{{$t("re_generate")}}
-						</v-btn>
+						<v-tooltip left>
+							<template v-slot:activator="{ on, attrs }">
+
+								<v-icon class="float" large text style="right: 0;" v-bind="attrs" v-on="on"
+									@click="re_generate()">
+									mdi-refresh
+								</v-icon>
+							</template>
+							<span>{{$t("re_generate")}}</span>
+						</v-tooltip>
+
 					</div>
 					<br><br><br><br><br><br><br><br><br>
 					<v-footer fixed>
@@ -239,7 +258,7 @@
 								停止<br>输入
 							</v-btn>
 						</div>
-						<v-textarea autofocus hide-details no-resize rows="3" :loading="loading" :placeholder="会话模式.描述"
+						<v-textarea autofocus hide-details no-resize rows="3" :loading="loading" :placeholder="$t(会话模式.描述)"
 							@keypress.enter="提交()" v-model="问题">
 						</v-textarea>
 						<div>
@@ -253,8 +272,8 @@
 							</v-btn>
 							<br>
 							<v-expand-transition>
-								<v-chip v-if="会话模式.名称!='常规模式'" color="purple" outlined close
-									@click:close='会话模式={名称: "常规模式",描述: "输入问题",问题: ""}'>
+								<v-chip v-if="会话模式.名称!=''" color="purple" outlined close
+									@click:close='会话模式={名称: "",描述: "input_question",问题: ""}'>
 									{{会话模式.名称}}
 								</v-chip>
 							</v-expand-transition>
@@ -278,7 +297,7 @@
 					</v-btn>
 					<v-data-table :headers="[{ text: '来源', value: 'title' },{ text: '内容', value: 'content' },]"
 						:items="zhishiku" hide-default-header hide-default-footer></v-data-table>
-						
+
 				</v-tab-item>
 				<v-tab-item key="setting">
 					<br>
@@ -303,15 +322,29 @@
 							</template>
 						</v-slider>
 						<v-slider :min="0" :max="10" :step="1" v-model="history_limit" thumb-color="purple"
-							label="chat轮数限制" thumb-label><template v-slot:append>
+							label="对话轮数限制" thumb-label><template v-slot:append>
 								<v-text-field v-model="history_limit" class="mt-0 pt-0" type="number"
 									style="width: 60px">
 								</v-text-field>
 							</template></v-slider>
 					</v-form>
-					<v-switch hide-details color="purple" inset v-model="语音输入" label="语音输入"></v-switch>
-					<v-switch hide-details color="purple" inset v-model="语音播报" label="语音播报"></v-switch>
+					<v-row>
+						<v-col cols="12" sm="2">
+							<v-switch hide-details color="purple" inset v-model="语音输入">
+								<template v-slot:label> <v-icon text>
+										mdi-microphone
+									</v-icon> </template>
+							</v-switch>
+						</v-col>
+						<v-col cols="12" sm="2">
+							<v-switch hide-details color="purple" inset v-model="语音播报">
+								<template v-slot:label> <v-icon text>
+										mdi-headset
+									</v-icon> </template></v-switch>
 
+						</v-col>
+					</v-row>
+					
 				</v-tab-item>
 				<v-tab-item v-for="plugin in plugins" :key="plugin.name">
 					<iframe frameborder="0" :src="plugin.url" style="width: 100%;height: 100%;"></iframe>
@@ -323,7 +356,9 @@
 					{{ $t(item) }}
 				</v-tab>
 				<v-tab v-for="plugin in plugins" :key="plugin.name">
-					{{plugin.name}}
+					<v-icon text v-if="plugin.icon">
+						{{"mdi-"+plugin.icon}}
+					</v-icon>{{plugin.name}}
 				</v-tab>
 			</v-tabs>
 			<br><br><br>
@@ -343,8 +378,8 @@
 				history_limit: 5,
 				功能菜单: 功能,
 				会话模式: {
-					名称: "常规模式",
-					描述: "输入问题",
+					名称: "",
+					描述: "input_question",
 					问题: "",
 				},
 				plugins: [],
@@ -379,7 +414,7 @@
 			app.会话模式 = 功能
 			app.drawer = false
 		}
-		删除 = (item) => {
+		delete_current_conversation = (item) => {
 			app.chat.splice(Math.floor(app.chat.indexOf(item) / 2) * 2, 2)
 			保存()
 		}
@@ -575,6 +610,27 @@
 			recognition.lang = "zh-CN";
 			recognition.start()
 			app.语音输入中 = true
+		}
+
+		copy = (s) => {
+			navigator.permissions.query({ name: "clipboard-write" }).then(result => {
+				if (result.state == "granted" || result.state == "prompt") {
+					navigator.clipboard.writeText(s.replace(/\n+/g, '\n'))
+						.then(() => {
+							alert('文本已经成功复制到剪切板');
+							console.log('文本已经成功复制到剪切板');
+						})
+						.catch(err => {
+						});
+				}
+				else {
+					alert('当前无操作权限。请使用最新版本Chrome浏览器，并在浏览器高级设置-页面设置中允许访问剪切板');
+					console.log("当前无操作权限。请使用最新版本Chrome浏览器，并在浏览器高级设置-页面设置中允许访问剪切板");
+				}
+			})
+		}
+		add_conversation = (role, content) => {
+			app.对话.push({ "role": role, "content": content })
 		}
 	</script>
 	<script src="api/llm"></script>
