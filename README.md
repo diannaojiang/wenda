@@ -22,9 +22,11 @@
          * [生成小说](#生成小说)
          * [文字冒险游戏](#文字冒险游戏)
       * [llama](#llama)
+* [基于本项目的二次开发](#基于本项目的二次开发)
+   * [<a href="https://github.com/AlanLee1996/wenda-webui">wenda-webui</a>](#wenda-webui)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: runner, at: Sun Apr 23 12:54:52 UTC 2023 -->
+<!-- Added by: runner, at: Thu Apr 27 14:13:18 UTC 2023 -->
 
 <!--te-->
 ## 简介
@@ -40,7 +42,7 @@
 
 **欢迎同学们制作教学视频、懒人包等，做好请和我联系，我会把相关链接加到readme里**
 
-**交流QQ群：162451840（已满）；241773574**
+**交流QQ群：LLM使用和综合讨论群162451840；知识库使用讨论群241773574；Auto开发交流群744842245**
 
 建议在[论坛](https://github.com/l15y/wenda/discussions)中讨论
 
@@ -202,5 +204,8 @@ cd bin
 编译好的：https://github.com/l15y/llama-cpp-python/releases
 
 模型位置等参数：修改`config.xml`。
+
+# 基于本项目的二次开发
+## [wenda-webui](https://github.com/AlanLee1996/wenda-webui)
 
 [![Star History Chart](https://api.star-history.com/svg?repos=l15y/wenda&type=Date)](https://star-history.com/#l15y/wenda&Date)

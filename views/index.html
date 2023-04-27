@@ -295,7 +295,7 @@
 					<v-btn color="purple" dark size="x-large" @click="find(test_zsk_prompt,test_zsk_step)">
 						测试
 					</v-btn>
-					<v-data-table :headers="[{ text: '来源', value: 'title' },{ text: '内容', value: 'content' },]"
+					<v-data-table :headers="[{ text: '来源', value: 'title' },{ text: '分数', value: 'score' },{ text: '内容', value: 'content' }]"
 						:items="zhishiku" hide-default-header hide-default-footer></v-data-table>
 
 				</v-tab-item>
@@ -448,7 +448,7 @@
 			let QA_history
 			if (app.history_on) {
 				QA_history = app.chat.concat()
-				if (app.history_limit != 0 && app.chat.length > app.history_limit) {
+				if (app.history_limit != 0 && app.chat.length > app.history_limit* 2) {
 					alert(`历史信息过长，将仅保留最后${app.history_limit}次chat记忆。setting为0不限制`)
 
 					QA_history = app.chat.slice(app.chat.length - app.history_limit * 2)
