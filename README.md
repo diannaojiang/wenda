@@ -26,7 +26,7 @@
    * [<a href="https://github.com/AlanLee1996/wenda-webui">wenda-webui</a>](#wenda-webui)
 
 <!-- Created by https://github.com/ekalinin/github-markdown-toc -->
-<!-- Added by: runner, at: Thu Apr 27 14:13:18 UTC 2023 -->
+<!-- Added by: runner, at: Fri Apr 28 08:27:53 UTC 2023 -->
 
 <!--te-->
 ## 简介
@@ -207,5 +207,6 @@ cd bin
 
 # 基于本项目的二次开发
 ## [wenda-webui](https://github.com/AlanLee1996/wenda-webui)
+项目调用闻达的 api 接口实现类似于 new bing 的功能。 技术栈：vue3 + element-plus + ts
 
 [![Star History Chart](https://api.star-history.com/svg?repos=l15y/wenda&type=Date)](https://star-history.com/#l15y/wenda&Date)
