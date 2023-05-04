@@ -20,9 +20,10 @@ os.environ['wenda_'+'Port'] = str(args.Port)
 os.environ['wenda_'+'Logging'] = str(args.Logging)
 os.environ['wenda_'+'LLM_Type'] = str(args.LLM_Type) 
 
-from plugins.settings import settings 
-from plugins.settings import error_helper 
-from plugins.settings import success_print 
+from plugins.common import settings 
+from plugins.common import error_helper 
+from plugins.common import success_print 
+from plugins.common import CounterLock
 
 
 def load_LLM():
@@ -32,26 +33,32 @@ def load_LLM():
         return LLM
     except Exception as e:
         print("LLM模型加载失败，请阅读说明：https://github.com/l15y/wenda", e)
-
-
 LLM = load_LLM()
+
 Logging=bool(settings.Logging == 'True')
 if Logging:
     from plugins.defineSQL import session_maker, 记录
-mutex = threading.Lock()
 
+if not hasattr(LLM,"Lock") :
+    mutex = CounterLock()
+else:
+    mutex = LLM.Lock()
 
 @route('/static/<path:path>')
 def staticjs(path='-'):
+    if path.endswith(".html"):
+        noCache()
     if path.endswith(".js"):
         return static_file(path, root="views/static/",mimetype ="application/javascript")
     return static_file(path, root="views/static/")
 
 @route('/:name')
 def static(name='-'):
+    if name.endswith(".html"):
+        noCache()
     return static_file(name, root="views")
 
-from plugins.settings import xml2json,json2xml
+from plugins.common import xml2json,json2xml
 import json
 @route('/api/readconfig', method=("POST","OPTIONS"))
 def readconfig():
@@ -116,16 +123,12 @@ def index():
     return static_file("index.html", root="views")
 
 
-当前用户 = None
 
 @route('/api/chat_now', method=('GET',"OPTIONS"))
 def api_chat_now():
     allowCROS()
-    response.set_header("Pragma", "no-cache")
-    response.add_header("Cache-Control", "must-revalidate")
-    response.add_header("Cache-Control", "no-cache")
-    response.add_header("Cache-Control", "no-store")
-    return '当前状态：'+当前用户[0]
+    noCache()
+    return {'queue_length':mutex.get_waiting_threads()}
 
 
 @hook('before_request')
@@ -137,23 +140,6 @@ def validate():
         request.environ['REQUEST_METHOD'] = HTTP_ACCESS_CONTROL_REQUEST_METHOD
 
 
-@route('/api/save_news', method=("POST","OPTIONS"))
-def api_chat_stream():
-    allowCROS()
-    try:
-        data = request.json
-        if not data:
-            return '0'
-        title = data.get('title')
-        txt = data.get('txt')
-        cut_file = f"txt/{title}.txt"
-        with open(cut_file, 'w', encoding='utf-8') as f:
-            f.write(txt)
-            f.close()
-        return '1'
-    except Exception as e:
-        print(e)
-    return '2'
 
 
 @route('/api/find', method=("POST","OPTIONS"))
@@ -194,7 +180,6 @@ def api_chat_box():
     # print(request.environ)
     IP = request.environ.get(
         'HTTP_X_REAL_IP') or request.environ.get('REMOTE_ADDR')
-    global 当前用户
     error = ""
     with mutex:
         yield "data: %s\n\n" %json.dumps({"response": (str(len(prompt))+'字正在计算')})
@@ -244,10 +229,9 @@ def api_chat_stream():
     # print(request.environ)
     IP = request.environ.get(
         'HTTP_X_REAL_IP') or request.environ.get('REMOTE_ADDR')
-    global 当前用户
     error = ""
     footer = '///'
-    yield str(len(prompt))+'字正在计算'
+    
     if use_zhishiku:
         # print(keyword)
         response_d = zhishiku.find(keyword,int(settings.library.Step))
@@ -257,9 +241,6 @@ def api_chat_stream():
         if bool(settings.library.Show_Soucre == 'True'):
             footer = "\n### 来源：\n"+('\n').join(output_sources)+'///'
     with mutex:
-
-        yield footer
-
         print("\033[1;32m"+IP+":\033[1;31m"+prompt+"\033[1;37m")
         try:
             pass_length = 0
@@ -292,11 +273,8 @@ tokenizer = None
 
 
 def load_model():
-    global 当前用户
-    mutex.acquire()
-    当前用户 = ['模型加载中', '', '']
-    LLM.load_model()
-    mutex.release()
+    with mutex:
+        LLM.load_model()
     torch.cuda.empty_cache()
     success_print("模型加载完成")
 
@@ -318,4 +296,18 @@ def load_zsk():
 thread_load_zsk = threading.Thread(target=load_zsk)
 thread_load_zsk.start()
 bottle.debug(True)
+
+import webbrowser
+webbrowser.open_new('http://127.0.0.1:'+str(settings.Port))
+
+import functools
+def pathinfo_adjust_wrapper(func):
+    # A wrapper for _handle() method
+    @functools.wraps(func)
+    def _(s,environ):
+        environ["PATH_INFO"] = environ["PATH_INFO"].encode("utf8").decode("latin1")
+        return func(s,environ)
+    return _
+bottle.Bottle._handle = pathinfo_adjust_wrapper(bottle.Bottle._handle)#修复bottle在处理utf8 url时的bug
+
 bottle.run(server='paste', host="0.0.0.0", port=settings.Port, quiet=True)

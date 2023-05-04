@@ -1,4 +1,4 @@
-from plugins.settings import settings
+from plugins.common import settings
 
 def chat_init(history):
     history_formatted = None
@@ -18,6 +18,7 @@ def chat_init(history):
 
 
 def chat_one(prompt, history_formatted, max_length, top_p, temperature, zhishiku=False):
+    yield str(len(prompt))+'字正在计算'
     for response, history in model.stream_chat(tokenizer, prompt, history_formatted,
                                                max_length=max_length, top_p=top_p, temperature=temperature):
         yield response

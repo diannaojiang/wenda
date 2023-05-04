@@ -13,7 +13,7 @@ const messages = {
     'zh-CN': {
         wenda: 'CBM',
         zhishiku: "知识库",
-        history: "历史",
+        history: "对话历史",
         send: "发送",
         abord: "中断",
         clear_history: "清除历史",
@@ -24,7 +24,10 @@ const messages = {
         title: "标题",
         content: "内容",
         input_question:"输入问题",
-        save:"保存"
+        save_to_disk:"保存至硬盘",
+        memory_name:"记忆区名称",
+        simplify_historical_information:"简化历史",
+        upload:"上传"
     }
     ,
 

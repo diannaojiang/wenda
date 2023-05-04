@@ -3,15 +3,15 @@ from langchain.embeddings import HuggingFaceEmbeddings
 import sentence_transformers
 import numpy as np
 import re,os
-from plugins.settings import settings
-from plugins.settings import error_helper 
-from plugins.settings import success_print 
+from plugins.common import settings
+from plugins.common import error_helper 
+from plugins.common import success_print 
 divider='\n'
 
 if not os.path.exists('memory'):
     os.mkdir('memory')
 cunnrent_setting=settings.library.rtst
-def get_doc_by_id(id):
+def get_doc_by_id(id,memory_name):
     return vectorstores[memory_name].docstore.search(vectorstores[memory_name].index_to_docstore_id[id])
 
 def process_strings(A, C, B):
@@ -26,28 +26,32 @@ def process_strings(A, C, B):
     # otherwise, just return A + B
     else:
         return A + B
-
-def get_doc(id,score,step):
-    doc = get_doc_by_id(id)
+    
+def get_doc(id,score,step,memory_name):
+    doc = get_doc_by_id(id,memory_name)
     final_content=doc.page_content
     print("文段分数：",score,[doc.page_content])
     if step > 0:
         for i in range(1, step+1):
             try:
-                doc_before=get_doc_by_id(id-i)
+                doc_before=get_doc_by_id(id-i,memory_name)
                 if doc_before.metadata['source']==doc.metadata['source']:
                     final_content=process_strings(doc_before.page_content,divider,final_content)
                     # print("上文分数：",score,doc.page_content)
             except:
                 pass
             try:
-                doc_after=get_doc_by_id(id+i)
+                doc_after=get_doc_by_id(id+i,memory_name)
                 if doc_after.metadata['source']==doc.metadata['source']:
                     final_content=process_strings(final_content,divider,doc_after.page_content)
             except:
                 pass
-    return {'title': doc.metadata['source'],'content':re.sub(r'\n+', "\n", final_content),"score":int(score)}
-def find(s,step = 0):
+    if doc.metadata['source'].endswith(".pdf") or doc.metadata['source'].endswith(".txt"):
+        title=f"[{doc.metadata['source']}](/api/read_news/{doc.metadata['source']})"
+    else:
+        title=doc.metadata['source']
+    return {'title': title,'content':re.sub(r'\n+', "\n", final_content),"score":int(score)}
+def find(s,step = 0,memory_name="default"):
     try:
         embedding = get_vectorstore(memory_name).embedding_function(s)
         scores, indices = vectorstores[memory_name].index.search(np.array([embedding], dtype=np.float32), int(cunnrent_setting.Count))
@@ -56,7 +60,7 @@ def find(s,step = 0):
             if i == -1:
                 continue
             if scores[0][j]>700:continue
-            docs.append(get_doc(i,scores[0][j],step))
+            docs.append(get_doc(i,scores[0][j],step,memory_name))
 
         return docs
     except Exception as e:
@@ -79,15 +83,16 @@ def get_vectorstore(memory_name):
                 'memory/'+memory_name, embeddings=embeddings)
             return vectorstores[memory_name]
         except Exception  as e:
-            success_print("没有读取到RTST记忆区，将新建。")
+            success_print("没有读取到RTST记忆区%s，将新建。"%memory_name)
     return None
+
 from langchain.docstore.document import Document
 from langchain.text_splitter import CharacterTextSplitter
 from bottle import route, response, request, static_file, hook
 import bottle
 @route('/api/upload_rtst_zhishiku', method=("POST","OPTIONS"))
 def upload_zhishiku():
-    global memory_name
+    allowCROS()
     try:
         data = request.json
         title=data.get("title")
@@ -99,7 +104,7 @@ def upload_zhishiku():
         print(docs)
         
         text_splitter = CharacterTextSplitter(
-            chunk_size=int(cunnrent_setting.Size), chunk_overlap=int(cunnrent_setting.Overlap), separator='\n')
+            chunk_size=20, chunk_overlap=0, separator='\n')
         doc_texts = text_splitter.split_documents(docs)
 
         texts = [d.page_content for d in doc_texts]
@@ -112,27 +117,53 @@ def upload_zhishiku():
             vectorstores[memory_name].merge_from(vectorstore_new)
         return '成功'
     except Exception as e:
-        raise e
+        return str(e)
 @route('/api/save_rtst_zhishiku', method=("POST","OPTIONS"))
 def save_zhishiku():
-    global memory_name
+    allowCROS()
     try:
         data = request.json
         memory_name=data.get("memory_name")
         vectorstores[memory_name].save_local('memory/'+memory_name)
         return "保存成功"
     except Exception as e:
-        raise e
+        return str(e)
 import json
 @route('/api/find_rtst_in_memory', method=("POST","OPTIONS"))
 def api_find():
-    global memory_name
+    allowCROS()
     data = request.json
     prompt = data.get('prompt')
     step = data.get('step')
     memory_name=data.get("memory_name")
     if step is None:
         step = int(settings.library.Step)
-    return json.dumps(find(prompt,int(step)))
-    
-memory_name=''
+    return json.dumps(find(prompt,int(step),memory_name))
+
+@route('/api/save_news', method=("POST","OPTIONS"))
+def save_news():
+    allowCROS()
+    try:
+        data = request.json
+        if not data:
+            return 'no data'
+        title = data.get('title')
+        txt = data.get('txt')
+        cut_file = f"txt/{title}.txt"
+        with open(cut_file, 'w', encoding='utf-8') as f:
+            f.write(txt)
+            f.close()
+        return 'success'
+    except Exception as e:
+        return(e)
+
+@route('/api/read_news/:path', method=("GET","OPTIONS"))
+def read_news(path=""):
+    allowCROS()
+    return static_file(path, root="txt/")
+
+def allowCROS():
+    response.set_header('Access-Control-Allow-Origin', '*')
+    response.add_header('Access-Control-Allow-Methods', 'POST,OPTIONS')
+    response.add_header('Access-Control-Allow-Headers',
+                        'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token')
