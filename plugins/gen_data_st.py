@@ -102,16 +102,16 @@ for i in range(len(all_files)):
                 data = f.read()
     except Exception as e:
         print("文件读取失败，当前文件已被跳过：",file,"。错误信息：",e)
-    data = re.sub(r'\n\r', "\n", data)
     data = re.sub(r'！', "！\n", data)
     data = re.sub(r'：', "：\n", data)
     data = re.sub(r'。', "。\n", data)
+    data = re.sub(r'\r', "\n", data)
     data = re.sub(r'\n\n', "\n", data)
+    data = re.sub(r"\n\s*\n", "\n", data)
     length_of_read+=len(data)
     docs.append(Document(page_content=data, metadata={"source": file}))
     if length_of_read > 1e5:
         success_print("处理进度",int(100*i/len(all_files)),f"%\t({i}/{len(all_files)})")
-        make_index()
         length_of_read=0
 if len(docs) > 0:
     make_index()
