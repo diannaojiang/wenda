@@ -238,8 +238,9 @@ def api_chat_stream():
             for response in LLM.chat_one(prompt,history_formatted,max_length,top_p,temperature,zhishiku=use_zhishiku):
                 # if (response):
                 #     yield response+footer
-                pass_length, pass_response = check_response(response, pass_length, pass_response)
-                yield pass_response + footer
+                if not response.endswith('正在计算'):
+                    pass_length, pass_response = check_response(response, pass_length, pass_response)
+                    yield pass_response + footer
         except Exception as e:
             error = str(e)
             error_print("错误", error)
