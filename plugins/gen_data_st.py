@@ -69,7 +69,7 @@ def make_index():
     metadatas = [d.metadata for d in doc_texts]
     thread = threading.Thread(target=clac_embedding, args=(texts, embeddings, metadatas))
     thread.start()
-    while embedding_lock.get_waiting_threads()>1:
+    while embedding_lock.get_waiting_threads()>2:
         time.sleep(0.1)
 
 all_files=[]
@@ -112,9 +112,14 @@ for i in range(len(all_files)):
     docs.append(Document(page_content=data, metadata={"source": file}))
     if length_of_read > 1e5:
         success_print("处理进度",int(100*i/len(all_files)),f"%\t({i}/{len(all_files)})")
+        make_index()
+        # print(embedding_lock.get_waiting_threads())
         length_of_read=0
 if len(docs) > 0:
     make_index()
+
+while embedding_lock.get_waiting_threads()>0:
+    time.sleep(0.1)
 with embedding_lock:
     time.sleep(0.1)
     with vectorstore_lock:
