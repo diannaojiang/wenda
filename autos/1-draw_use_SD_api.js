@@ -11,7 +11,7 @@
 
 
 功能.push({
-    名称: "draw_use_SD_api",
+    名称: "draw use SD",
     问题: async () => {
         lsdh(false)
         zsk(false)
@@ -20,19 +20,25 @@
         app.loading = true
         add_conversation("user", Q)
         response = await fetch("/api/sd_agent", {
+            // signal: signal,
             method: 'post',
             body: JSON.stringify({
-                "prompt": `((masterpiece, best quality)), photorealistic,` + Q,
-                "steps": 20,
-                "negative_prompt": `paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, glans`
+                prompt: `((masterpiece, best quality)), photorealistic,` + Q,
+                steps: 20,
+                // sampler_name: "DPM++ SDE Karras",
+                negative_prompt: `paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, glans`
             }),
             headers: {
                 'Content-Type': 'application/json'
             }
         })
-        let json = await response.json()
+        try {
+            let json = await response.json()
+            add_conversation("AI", '![](data:image/png;base64,' + json.images[0] + ")")
+        } catch (error) {
+            alert("连接SD API失败，请确认已开启agents库，并将SD API地址设置为127.0.0.1:786")
+        }
         app.loading = false
-        add_conversation("AI", '![](data:image/png;base64,' + json.images[0] + ")")
         save_history()
     },
 })
