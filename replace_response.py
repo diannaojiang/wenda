@@ -18,10 +18,12 @@ from apscheduler.schedulers.background import BackgroundScheduler
 REPlACE_DICT = {
 "GLM-6B": "CBM",
 "GLM": "CBM",
+"130": "7",
 "清华大学 KEG 实验室": "中国软件研究院",
 "清华大学KEG实验室": "中国软件研究院",
 "智谱 AI ": "中国软件",
-"智谱AI ": "中国软件"
+"智谱AI ": "中国软件",
+"智谱AI": "中国软件"
 }
 
 EXPIRY_DATETIME = "2023-04-06 15:48:00"  # 过期时间
