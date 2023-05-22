@@ -5,9 +5,9 @@ PYTHON="/mnt/data/anaconda3/envs/ChatCBM/bin/python"
 while true
 do
     if [ -z "$PYTHON" ]; then
-        CUDA_VISIBLE_DEVICES=1 python wenda.py -t glm6b -p 17861
+        CUDA_VISIBLE_DEVICES=0 python wenda.py -t glm6b -p 17860
     else
-        CUDA_VISIBLE_DEVICES=1 $PYTHON wenda.py -t glm6b -p 17861
+        CUDA_VISIBLE_DEVICES=0 $PYTHON wenda.py -t glm6b -p 17860
     fi
 sleep 1
 done

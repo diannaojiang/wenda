@@ -33,7 +33,7 @@ get_url_form_md = (s) => {
 
         lsdh(false)
         app.chat.push({ "role": "user", "content": Q })
-        kownladge = (await find(Q, 5)).map(i => ({
+        kownladge = (await find(Q, 1)).map(i => ({
             title: get_title_form_md(i.title),
             url: get_url_form_md(i.title),
             content: i.content
@@ -77,7 +77,7 @@ if (app.llm_type == "rwkv") {
             let Q = app.问题
 
             lsdh(false)
-            kownladge = (await find(Q, 5)).map(i => ({
+            kownladge = (await find(Q, 1)).map(i => ({
                 title: get_title_form_md(i.title),
                 url: get_url_form_md(i.title),
                 content: i.content
