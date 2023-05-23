@@ -103,6 +103,14 @@ def read_auto_plugins():
                 with open(file_path, "r", encoding='utf-8') as f:
                     plugins.append(f.read())
     return "\n".join(plugins)
+
+@route('/autos/<path:path>')
+def staticjs(path='-'):
+    if path.endswith(".html"):
+        noCache()
+    if path.endswith(".js"):
+        return static_file(path, root="views/autos/", mimetype="application/javascript")
+    return static_file(path, root="views/autos/")
 # @route('/writexml', method=("POST","OPTIONS"))
 # def writexml():
     # data = request.json
