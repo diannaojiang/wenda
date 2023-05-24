@@ -269,8 +269,13 @@ else:
         key = base64.urlsafe_b64encode(('cssailab2023shuizhenz'+mac[:-1]).encode())
         print("device key:",key)
 
-
-        model = RWKV(model=settings.llm.path, strategy=settings.llm.strategy, key=key)
+        try:
+            model = RWKV(model=settings.llm.path, strategy=settings.llm.strategy, key=key)
+        except Exception as e:
+            if str(type(e)) == "<class 'cryptography.fernet.InvalidToken'>":
+                print("密钥错误，请联系研究院开发人员。")
+            print('error:',e)
+            exit(0)
         # if settings.rwkv_lora_path == '':
         # else:
         #     with torch.no_grad():
