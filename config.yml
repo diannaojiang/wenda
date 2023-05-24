@@ -13,13 +13,6 @@ llm_models:
      #rwkv模型参数"
      historymode: string
      #rwkv历史记录实现方式：state、string
-  szz: 
-     path: "../Models/szz-0513.pth"
-     #rwkv模型位置"
-     strategy: "cuda fp16"
-     #rwkv模型参数"
-     historymode: string
-     #rwkv历史记录实现方式：state、string
   glm6b: 
      path: "../Models/chatglm-6b"
      #glm模型位置"
