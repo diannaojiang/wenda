@@ -260,7 +260,17 @@ else:
             # '1' to compile CUDA kernel (10x faster), requires c++ compiler & cuda libraries
 
         from rwkv.model import RWKV  # pip install rwkv
-        model = RWKV(model=settings.llm.path, strategy=settings.llm.strategy)
+
+        import uuid
+        import base64
+        
+        mac = uuid.UUID(int=uuid.getnode()).hex[-12:]
+        print("device mac:",mac)
+        key = base64.urlsafe_b64encode(('cssailab2023shuizhenz'+mac[:-1]).encode())
+        print("device key:",key)
+
+
+        model = RWKV(model=settings.llm.path, strategy=settings.llm.strategy, key=key)
         # if settings.rwkv_lora_path == '':
         # else:
         #     with torch.no_grad():
