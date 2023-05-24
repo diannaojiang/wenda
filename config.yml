@@ -7,7 +7,7 @@ llm_type: szz
 #llm模型类型:glm6b、rwkv、llama、replitcode
 llm_models: 
   szz: 
-     path: "../Models/szz-0513.pth"
+     path: "../Models/szz.pth"
      #rwkv模型位置"
      strategy: "cuda fp16"
      #rwkv模型参数"
