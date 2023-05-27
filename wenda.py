@@ -78,6 +78,14 @@ def staticjs(path='-'):
         return static_file(path, root="views/static/", mimetype="application/javascript")
     return static_file(path, root="views/static/")
 
+@route('/autos/<path:path>')
+def staticjs(path='-'):
+    if path.endswith(".html"):
+        noCache()
+    if path.endswith(".js"):
+        return static_file(path, root="views/autos/", mimetype="application/javascript")
+    return static_file(path, root="views/autos/")
+
 @route('/assets/<path:path>')
 def webui_assets(path='-'):
     if path.endswith(".html"):
