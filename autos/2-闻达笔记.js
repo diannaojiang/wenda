@@ -1,10 +1,10 @@
 app.plugins.push({ icon: 'note-edit-outline', url: "/static/wdnote/index.html" })
 
 
-功能.push({
-    名称: "笔记",
-    问题: async () => {
-        let Q = app.问题
+func.push({
+    name: "闻达笔记",
+    question: async () => {
+        let Q = app.question
         zsk(false)
         lsdh(false)
         app.chat.push({ "role": "user", "content": "以下文段是我准备写笔记的相关素材和观点，请结合如下内容写一篇笔记。\n文段内容：\n" + Q })
@@ -13,10 +13,10 @@ app.plugins.push({ icon: 'note-edit-outline', url: "/static/wdnote/index.html" }
         result = []
 
         if (kownladge.length == 0) {
-            app.chat.push({ "role": "AI", "content": "笔记分析:您输入的信息似乎和笔记没有太大关系，我是您的笔记AI助理，主要协助您编写笔记，如果有其他问题，可以咨询我的AI小伙伴们。\n" })
+            app.chat.push({ "role": "AI", "content": "闻达笔记分析:您输入的信息似乎和笔记没有太大关系，我是您的闻达笔记AI助理，主要协助您编写笔记，如果有其他问题，可以咨询我的AI小伙伴们。\n" })
         } else {
             app.chat.push({
-                "role": "AI", "content": "笔记分析:\n|标题|内容|\n|--|--|\n" +
+                "role": "AI", "content": "闻达笔记分析:\n|标题|内容|\n|--|--|\n" +
                     kownladge.map(i => "|" + i.title + "|" + i.content.replace(/\n/g,' ') + "|").join("\n")
             })
         }
@@ -41,8 +41,7 @@ app.plugins.push({ icon: 'note-edit-outline', url: "/static/wdnote/index.html" }
             app.chat.push({ "role": "AI", "content": "非常抱歉，我没有找到相关知识，请再给我一些新的提示。" })
         }
 
-        //app.会话模式={名称: "常规模式",描述: "输入问题",问题: ""}
-    },
+          },
 })
 
 writeNote = (s) => {
