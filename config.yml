@@ -7,11 +7,11 @@ llm_type: rwkv
 #llm模型类型:glm6b、rwkv、llama、replitcode
 llm_models: 
   rwkv: 
-     path: "../Models/RWKV-4-World-0.4B-v1-20230529-ctx4096.pth"
+     path: "../Models/RWKV-4-Raven-7B-v12-Eng49%-Chn49%-Jpn1%-Other1%-20230530-ctx8192.pth"
      #rwkv模型位置"
-     strategy: "cuda fp32"
+     strategy: "cuda fp16"
      #rwkv模型参数"
-     historymode: string
+     historymode: state
      #rwkv历史记录实现方式：state、string
   glm6b: 
      path: "../Models/chatglm-6b"
