@@ -1,4 +1,12 @@
-import re
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+import time
+from starlette.requests import Request
+from fastapi.middleware.wsgi import WSGIMiddleware
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
+import uvicorn
+import asyncio
 import functools
 import bottle
 from bottle import route, response, request, static_file, hook
@@ -8,16 +16,17 @@ import os
 import threading
 import torch
 from plugins.common import error_helper, error_print, success_print
-from plugins.common import  allowCROS
+from plugins.common import allowCROS
 from plugins.common import settings
+from plugins.common import app
 import logging
 logging.captureWarnings(True)
 
 from replace_response import check_response, LicenseCheckTask
 
 
-import asyncio
 lock = asyncio.Lock()
+
 
 def load_LLM():
     try:
@@ -35,7 +44,6 @@ if logging:
     from plugins.defineSQL import session_maker, 记录
 
 
-
 model = None
 tokenizer = None
 
@@ -46,14 +54,14 @@ def load_model():
     success_print("模型加载完成")
 
 
-thread_load_model = threading.Thread(target=load_model)
-thread_load_model.start()
+if __name__ == '__main__':
+    thread_load_model = threading.Thread(target=load_model)
+    thread_load_model.start()
 zhishiku = None
 
 
 def load_zsk():
     try:
-        from importlib import import_module
         global zhishiku
         import plugins.zhishiku as zsk
         zhishiku = zsk
@@ -64,41 +72,18 @@ def load_zsk():
         raise e
 
 
-thread_load_zsk = threading.Thread(target=load_zsk)
-thread_load_zsk.start()
+if __name__ == '__main__':
+    thread_load_zsk = threading.Thread(target=load_zsk)
+    thread_load_zsk.start()
 
 
-@route('/static/<path:path>')
-def staticjs(path='-'):
-    if path.endswith(".html"):
-        noCache()
-    if path.endswith(".js"):
-        return static_file(path, root="views/static/", mimetype="application/javascript")
-    return static_file(path, root="views/static/")
-
-@route('/assets/<path:path>')
-def webui_assets(path='-'):
-    if path.endswith(".html"):
-        noCache()
-    if path.endswith(".js"):
-        return static_file(path, root="views/assets/", mimetype="application/javascript")
-    return static_file(path, root="views/assets/")
-
-
-@route('/:name')
-def static(name='-'):
-    if name.endswith(".html"):
-        noCache()
-    return static_file(name, root="views")
-
-
-@route('/api/llm')
+@route('/llm')
 def llm_js():
     noCache()
     return static_file('llm_'+settings.llm_type+".js", root="llms")
 
 
-@route('/api/plugins')
+@route('/plugins')
 def read_auto_plugins():
     noCache()
     plugins = []
@@ -107,7 +92,7 @@ def read_auto_plugins():
             if(file.endswith(".js")):
                 file_path = os.path.join(root, file)
                 with open(file_path, "r", encoding='utf-8') as f:
-                    plugins.append({"name":file,"content":f.read()})
+                    plugins.append({"name": file, "content": f.read()})
     return json.dumps(plugins)
 # @route('/writexml', method=("POST","OPTIONS"))
 # def writexml():
@@ -139,6 +124,7 @@ def pathinfo_adjust_wrapper(func):
 bottle.Bottle._handle = pathinfo_adjust_wrapper(
     bottle.Bottle._handle)  # 修复bottle在处理utf8 url时的bug
 
+
 @hook('before_request')
 def validate():
     REQUEST_METHOD = request.environ.get('REQUEST_METHOD')
@@ -147,21 +133,18 @@ def validate():
     if REQUEST_METHOD == 'OPTIONS' and HTTP_ACCESS_CONTROL_REQUEST_METHOD:
         request.environ['REQUEST_METHOD'] = HTTP_ACCESS_CONTROL_REQUEST_METHOD
 
-@route('/')
-def index():
-    noCache()
-    return static_file("index.html", root="views")
 
-waiting_threads=0
-@route('/api/chat_now', method=('GET', "OPTIONS"))
+waiting_threads = 0
+
+
+@route('/chat_now', method=('GET', "OPTIONS"))
 def api_chat_now():
     allowCROS()
     noCache()
     return {'queue_length': waiting_threads}
 
 
-
-@route('/api/find', method=("POST", "OPTIONS"))
+@route('/find', method=("POST", "OPTIONS"))
 def api_find():
     allowCROS()
     data = request.json
@@ -174,7 +157,7 @@ def api_find():
     return json.dumps(zhishiku.find(prompt, int(step)))
 
 
-@route('/chat/completions', method=("POST", "OPTIONS"))
+@route('/completions', method=("POST", "OPTIONS"))
 def api_chat_box():
     response.content_type = "text/event-stream"
     response.add_header("Connection", "keep-alive")
@@ -219,7 +202,7 @@ def api_chat_box():
         os._exit(0)
 
 
-@route('/api/chat_stream', method=("POST", "OPTIONS"))
+@route('/chat_stream', method=("POST", "OPTIONS"))
 def api_chat_stream():
     allowCROS()
     data = request.json
@@ -278,25 +261,25 @@ bottle.debug(True)
 # webbrowser.open_new('http://127.0.0.1:'+str(settings.Port))
 
 # bottle.run(server='paste', host="0.0.0.0", port=settings.port, quiet=True)
-import uvicorn
-from fastapi import FastAPI,WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.wsgi import WSGIMiddleware
-from starlette.requests import Request
-app = FastAPI(title="Wenda",
-              description="Wenda API",
-              version="1.0.0",
-              # docs_url=None,
-              # redoc_url=None,
-              openapi_url="/api/v1/openapi.json",
-              docs_url="/api/v1/docs",
-              redoc_url="/api/v1/redoc")
-import time
+
+
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Times"] = str(process_time)
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Cache-Control"]="no-cache,no-store,must-revalidate"
+
+    return response
+
 @app.websocket('/ws')
 async def websocket_endpoint(websocket: WebSocket):
     global waiting_threads
-    await websocket.accept() 
-    waiting_threads+=1
+    await websocket.accept()
+    waiting_threads += 1
     # await asyncio.sleep(5)
     try:
         data = await websocket.receive_json()
@@ -335,16 +318,26 @@ async def websocket_endpoint(websocket: WebSocket):
             torch.cuda.empty_cache()
         if logging:
             with session_maker() as session:
-                jl = 记录(时间=datetime.datetime.now(), IP=IP, 问=prompt, 答=response)
+                jl = 记录(时间=datetime.datetime.now(),
+                        IP=IP, 问=prompt, 答=response)
                 session.add(jl)
                 session.commit()
         print(response)
         await websocket.close()
     except WebSocketDisconnect:
         pass
-    waiting_threads-=1
-        
+    waiting_threads -= 1
 
-app.mount(path="/", app=WSGIMiddleware(bottle.app[0]))
+
+@app.get("/")
+async def index(request: Request):
+    return RedirectResponse(url="/index.html")
+
+app.mount(path="/chat/", app=WSGIMiddleware(bottle.app[0]))
+app.mount(path="/api/", app=WSGIMiddleware(bottle.app[0]))
+app.mount("/txt/", StaticFiles(directory="txt"), name="txt")
+app.mount("/", StaticFiles(directory="views"), name="static")
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=settings.port, log_level='error', loop="asyncio")
+    uvicorn.run(app, host="0.0.0.0", port=settings.port,
+                log_level='error', loop="asyncio")

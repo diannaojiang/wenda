@@ -1,8 +1,7 @@
-
 send_raw = async (prompt, keyword, QA_history, onmessage = alert) => {
     let result = ''
     await new Promise(resolve => {
-        ws = new WebSocket(location.href.replace("http", "ws") + "ws");
+        ws = new WebSocket(location.origin.replace("http", "ws") + "/ws");
         ws.onmessage = function (event) {
             result = event.data
             onmessage(result)
@@ -98,7 +97,7 @@ listen = () => {
     };
     recognition.onerror = function (e) {
         console.log(final_transcript);
-        alert("语音识别失败:"+ e.error);
+        alert("语音识别失败:" + e.error);
         app.sst_started = false;
         console.log(e);
     };

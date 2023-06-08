@@ -1,4 +1,4 @@
-from langchain.vectorstores.faiss import FAISS
+
 from langchain.embeddings import HuggingFaceEmbeddings
 import sentence_transformers
 import numpy as np
@@ -6,6 +6,10 @@ import re,os
 from plugins.common import settings,allowCROS
 from plugins.common import error_helper 
 from plugins.common import success_print 
+if settings.librarys.rtst.backend=="Annoy":
+    from langchain.vectorstores.annoy import Annoy as Vectorstore
+else:
+    from langchain.vectorstores.faiss import FAISS as Vectorstore
 divider='\n'
 
 if not os.path.exists('memory'):
@@ -49,7 +53,7 @@ def get_doc(id,score,step,memory_name):
             except:
                 pass
     if doc.metadata['source'].endswith(".pdf") or doc.metadata['source'].endswith(".txt"):
-        title=f"[{doc.metadata['source']}](/api/read_news/{doc.metadata['source']})"
+        title=f"[{doc.metadata['source']}](/txt/{doc.metadata['source']})"
     else:
         title=doc.metadata['source']
     return {'title': title,'content':re.sub(r'\n+', "\n", final_content),"score":int(score)}
@@ -81,7 +85,7 @@ def get_vectorstore(memory_name):
         return vectorstores[memory_name]
     except Exception  as e:
         try:
-            vectorstores[memory_name] = FAISS.load_local(
+            vectorstores[memory_name] = Vectorstore.load_local(
                 'memory/'+memory_name, embeddings=embeddings)
             return vectorstores[memory_name]
         except Exception  as e:
@@ -92,7 +96,7 @@ from langchain.docstore.document import Document
 from langchain.text_splitter import CharacterTextSplitter
 from bottle import route, response, request, static_file, hook
 import bottle
-@route('/api/upload_rtst_zhishiku', method=("POST","OPTIONS"))
+@route('/upload_rtst_zhishiku', method=("POST","OPTIONS"))
 def upload_zhishiku():
     allowCROS()
     try:
@@ -111,7 +115,7 @@ def upload_zhishiku():
 
         texts = [d.page_content for d in doc_texts]
         metadatas = [d.metadata for d in doc_texts]
-        vectorstore_new = FAISS.from_texts(texts, embeddings, metadatas=metadatas)
+        vectorstore_new = Vectorstore.from_texts(texts, embeddings, metadatas=metadatas)
         vectorstore=get_vectorstore(memory_name)
         if vectorstore is None:
             vectorstores[memory_name]=vectorstore_new
@@ -120,7 +124,7 @@ def upload_zhishiku():
         return '成功'
     except Exception as e:
         return str(e)
-@route('/api/save_rtst_zhishiku', method=("POST","OPTIONS"))
+@route('/save_rtst_zhishiku', method=("POST","OPTIONS"))
 def save_zhishiku():
     allowCROS()
     try:
@@ -131,7 +135,7 @@ def save_zhishiku():
     except Exception as e:
         return str(e)
 import json
-@route('/api/find_rtst_in_memory', method=("POST","OPTIONS"))
+@route('/find_rtst_in_memory', method=("POST","OPTIONS"))
 def api_find():
     allowCROS()
     try:
@@ -145,7 +149,7 @@ def api_find():
     except Exception as e:
         return str(e)
     
-@route('/api/del_rtst_in_memory', method=("POST","OPTIONS"))
+@route('/del_rtst_in_memory', method=("POST","OPTIONS"))
 def api_find():
     allowCROS()
     try:
@@ -155,7 +159,7 @@ def api_find():
     except Exception as e:
         return str(e)
 
-@route('/api/save_news', method=("POST","OPTIONS"))
+@route('/save_news', method=("POST","OPTIONS"))
 def save_news():
     allowCROS()
     try:
@@ -171,8 +175,3 @@ def save_news():
         return 'success'
     except Exception as e:
         return(e)
-
-@route('/api/read_news/:path', method=("GET","OPTIONS"))
-def read_news(path=""):
-    allowCROS()
-    return static_file(path, root="txt/")
