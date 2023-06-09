@@ -53,7 +53,7 @@ llm_models:
      strategy: "cuda fp16"
     #因我的3070只有8g内存，所以是先把模理加载到内存进行精度转换，至少要32g系统内存， fp16 占用不到6g显存,fp32 超过8g未测试"
 library: 
-     strategy: "rtst:1 agents:0"
+     strategy: "calc:2 rtst:1 agents:0"
      #知识库参数，每组参数间用空格分隔，冒号前为知识库类型，后为抽取数量。
 
      #知识库类型:
@@ -68,7 +68,7 @@ library:
      #agents      提供网络资源代理，没有知识库查找功能，所以数量为0
      #            （目前stable-diffusion的auto脚本需要使用其中功能，同时需开启stable-diffusion的api功能）
 
-     count: 1
+     count: 5
      #最大抽取数量（所有知识库总和）
 
      show_soucre: true
@@ -100,7 +100,7 @@ librarys:
      #分块大小"
      overlap: 100
      #分块重叠长度
-     model_path: "../Models/text2vec-large-chinese"
+     model_path: "../Models/m3e-base"
      #向量模型存储路径
      device: cuda
      #embedding运行设备
