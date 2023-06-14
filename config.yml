@@ -68,7 +68,7 @@ library:
      #agents      提供网络资源代理，没有知识库查找功能，所以数量为0
      #            （目前stable-diffusion的auto脚本需要使用其中功能，同时需开启stable-diffusion的api功能）
 
-     count: 5
+     count: 1
      #最大抽取数量（所有知识库总和）
 
      show_soucre: true
@@ -94,11 +94,11 @@ librarys:
     host: "http://127.0.0.1:17860/api/find"
      #远程知识库地址地址
   rtst: 
-     count: 1
+     count: 3
      #最大抽取数量
-     size: 200
+     size: 20
      #分块大小"
-     overlap: 100
+     overlap: 0
      #分块重叠长度
      model_path: "../Models/m3e-base"
      #向量模型存储路径
