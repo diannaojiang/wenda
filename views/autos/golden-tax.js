@@ -1,5 +1,5 @@
 
-window._golden_tax_url = 'http://39.130.240.104:8091'
+window._golden_tax_url = 'http://114.246.84.186:17860' //'http://39.130.240.104:8091' //
 app.plugins.push({ icon: 'gold', url: "http://39.130.240.104:8091/shuiwu/zhenzhu/#/" })
 // chrome://flags/#unsafely-treat-insecure-origin-as-secure
 app.golden_tax_faqs = [
@@ -8,8 +8,8 @@ app.golden_tax_faqs = [
     '2022年北京市千户集团企业的应纳税额总计是多少？',
     '2022年广东省高新技术企业小米集团的营业收入是多少？'
 ]
-功能.push({
-    名称: "金小税",
+func.push({
+    name: "金小税",
     icon: 'gold',
     settings:{
         autoPrintZhenzhulian: {
@@ -28,11 +28,11 @@ app.golden_tax_faqs = [
             default:100
         }
     },
-    描述: "请输入内容",
-    问题: async () => {
-        let Q = app.问题
+    description: "请输入内容",
+    question: async () => {
+        let Q = app.question
         const origText = Q
-        app.问题 = ''
+        app.question = ''
         app.max_length = 4096
         if(Q.indexOf('标签、指标、维度')===-1){
             Q +=  '\n请帮我抽取这段话中的标签、指标、维度。'

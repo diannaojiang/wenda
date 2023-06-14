@@ -38,18 +38,10 @@ function find_RomanNumerals(str) {
     return number
 }
 
-<<<<<<< HEAD:views/autos/0-write_article.js
-功能.push({
-    名称: "根据标题写论文",
-    icon: 'format-header-1',
-    描述: "根据主题撰写内容翔实、有信服力的论文",
-    问题: async () => {
-=======
 func.push({
     name: "根据标题写论文",
     description: "根据主题撰写内容翔实、有信服力的论文",
     question: async () => {
->>>>>>> CSS:autos/0-write_article.js
         lsdh(false)
         Q = app.question
         app.max_length = 4096
@@ -81,20 +73,11 @@ func.push({
 
     },
 })
-<<<<<<< HEAD:views/autos/0-write_article.js
-功能.push({
-    名称: "根据提纲写论文",
-    icon: 'subtitles-outline',
-    描述: "根据主题撰写内容翔实、有信服力的论文",
-    问题: async () => {
-        title = app.问题
-=======
 func.push({
     name: "根据提纲写论文",
     description: "根据主题撰写内容翔实、有信服力的论文",
     question: async () => {
         title = app.question
->>>>>>> CSS:autos/0-write_article.js
         app.max_length = 4096
         app.chat = []
         resp =title.split("\n")

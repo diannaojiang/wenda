@@ -10,16 +10,9 @@
 // ==/UserScript==
 
 
-<<<<<<< HEAD:views/autos/1-draw_use_SD_api.js
-功能.push({
-    名称: "画图",
-    icon: 'draw',
-    问题: async () => {
-=======
 func.push({
     name: "画图",
     question: async () => {
->>>>>>> CSS:autos/1-draw_use_SD_api.js
         lsdh(false)
         zsk(false)
 
@@ -50,16 +43,9 @@ func.push({
         save_history()
     },
 })
-<<<<<<< HEAD:views/autos/1-draw_use_SD_api.js
-功能.push({
-    名称: "draw use SD",
-    icon:'account-edit',
-    问题: async () => {
-=======
 func.push({
     name: "draw use SD",
     question: async () => {
->>>>>>> CSS:autos/1-draw_use_SD_api.js
         lsdh(false)
         zsk(false)
 
