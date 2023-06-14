@@ -1,11 +1,58 @@
+import torch
 from plugins.common import settings
+import time
+from copy import deepcopy
+import threading
+import time
+import math
 import re
+interface = ":"
+if settings.llm.path.lower().find("world") > -1:
+    print("rwkv world mode!")
+    user = "Question"
+    answer = "Answer"
+    tokenizers_file = "rwkv_vocab_v20230424"
+else:
+    user = "Bob"
+    answer = "Alice"
+    tokenizers_file = "20B_tokenizer.json"
 
+states = {}
+
+
+class State(object):
+    def __init__(self, state):
+        self.state = [tensor.cpu() for tensor in state] if device != torch.device(
+            "cpu") else state
+        self.touch()
+
+    def get(self):
+        self.touch()
+        return [tensor.to(device) for tensor in self.state] if device != torch.device("cpu") else deepcopy(self.state)
+
+    def touch(self):
+        self.time = time.time()
+
+
+def gc_states():
+    while True:
+        time.sleep(3)
+        if len(states) > 1000:
+            oldest = [math.inf, '']
+            for i in states:
+                if states[i].time < oldest[0]:
+                    oldest = [states[i].time, i]
+            del states[oldest[1]]
+
+
+thread_load_model = threading.Thread(target=gc_states)
+thread_load_model.start()
+
+device = 'cuda:0'
 if settings.llm.strategy.startswith("Q"):
     runtime = "cpp"
 
     from typing import Optional
-    import torch
     import tokenizers
     from llms.rwkvcpp.sampling import sample_logits
     logits: Optional[torch.Tensor] = None
@@ -22,8 +69,8 @@ if settings.llm.strategy.startswith("Q"):
         logits[END_OF_LINE_TOKEN] += new_line_logit_bias
 
     def chat_init(history):
-        global state,logits
-        if settings.llm.historymode!='string':
+        global state, logits
+        if settings.llm.historymode != 'string':
             if history is not None and len(history) > 0:
                 pass
             else:
@@ -36,43 +83,36 @@ if settings.llm.strategy.startswith("Q"):
                 if old_chat['role'] == "user":
                     tmp.append(f"{user}{interface} "+old_chat['content'])
                 elif old_chat['role'] == "AI":
-                    tmp.append(f"{bot}{interface} "+old_chat['content'])
+                    tmp.append(f"{answer}{interface} "+old_chat['content'])
                 else:
                     continue
-            history='\n\n'.join(tmp)
+            history = '\n\n'.join(tmp)
             state = None
             logits = None
             return history
 
-
     def chat_one(prompt, history, max_length, top_p, temperature, zhishiku=False):
-        global state,resultChat,token_stop,logits
+        global state, resultChat, token_stop, logits
         token_count = max_length
         presencePenalty = 0.2
         countPenalty = 0.2
-        token_stop=[0]
+        token_stop = [0]
 
         resultChat = ""
 
-        if zhishiku:
-            ctx = "\n\n"+prompt.replace('system:',
-                                        'Bob:')\
-                .replace('\n\n',"\n")+f"\n\n{bot}{interface}"
-            ctx = re.sub('网页', '', ctx)
-            ctx = re.sub('原标题：', '', ctx)
+        if prompt.startswith("raw!"):
+            print("[RWKV raw mode]", end="")
+            ctx = prompt.replace("raw!", "")
         else:
-            if prompt.startswith("raw!"):
-                print("RWKV raw mode!")
-                ctx=prompt.replace("raw!","")
-            else:
-                ctx = f"\n\n{user}{interface} {prompt}\n\n{bot}{interface}"
-        if settings.llm.historymode=='string':
-            ctx=history+ctx
+            ctx = f"\n\n{user}{interface} {prompt}\n\n{answer}{interface}"
+        if settings.llm.historymode == 'string':
+            ctx = history+ctx
         yield str(len(ctx))+'字正在计算'
         new = ctx.strip()
         print(f'{new}', end='')
 
-        process_tokens(tokenizer.encode(new).ids, new_line_logit_bias=-999999999)
+        process_tokens(tokenizer.encode(new).ids,
+                       new_line_logit_bias=-999999999)
 
         accumulated_tokens: list[int] = []
         token_counts: dict[int, int] = {}
@@ -100,36 +140,30 @@ if settings.llm.strategy.startswith("Q"):
 
             if '\uFFFD' not in decoded:
                 resultChat = resultChat + decoded
-                if resultChat.endswith('\n\n') or resultChat.endswith(f"{user}{interface}") or resultChat.endswith(f"{bot}{interface}"):
+                if resultChat.endswith('\n\n') or resultChat.endswith(f"{user}{interface}") or resultChat.endswith(f"{answer}{interface}"):
                     resultChat = remove_suffix(
                         remove_suffix(
                             remove_suffix(
-                                remove_suffix(resultChat, f"{user}{interface}")
-                            , f"{bot}{interface}"),
-                        '\n'),
-                    '\n')
+                                remove_suffix(resultChat, f"{user}{interface}"), f"{answer}{interface}"),
+                            '\n'),
+                        '\n')
                     yield resultChat
                     break
                 yield resultChat
                 accumulated_tokens = []
-
 
     def remove_suffix(input_string, suffix):  # 兼容python3.8
         if suffix and input_string.endswith(suffix):
             return input_string[:-len(suffix)]
         return input_string
 
-
-    interface = ":"
-    user = "Bob"
-    bot = "Alice"
     model = None
     state = None
     tokenizer = None
 
     def load_model():
-        global model,tokenizer
-        
+        global model, tokenizer
+
         from llms.rwkvcpp.rwkv_cpp_shared_library import load_rwkv_shared_library
         library = load_rwkv_shared_library()
         print(f'System info: {library.rwkv_get_system_info_string()}')
@@ -137,77 +171,89 @@ if settings.llm.strategy.startswith("Q"):
         from llms.rwkvcpp.rwkv_cpp_model import RWKVModel
         try:
             cpu_count = int(settings.llm.strategy.split('->')[1])
-            model = RWKVModel(library, settings.llm.path,cpu_count)
+            model = RWKVModel(library, settings.llm.path, cpu_count)
         except:
             model = RWKVModel(library, settings.llm.path)
         print('Loading 20B tokenizer')
-        tokenizer = tokenizers.Tokenizer.from_file(str('20B_tokenizer.json'))
+        tokenizer = tokenizers.Tokenizer.from_file(tokenizers_file)
 
 
 else:
     runtime = "torch"
 
     def chat_init(history):
-        global state
-        if settings.llm.historymode!='string':
-            if history is not None and len(history) > 0:
-                pass
-            else:
-                state = None
-        else:
-            tmp = []
-            # print(history)
-            for i, old_chat in enumerate(history):
-                if old_chat['role'] == "user":
-                    tmp.append(f"{user}{interface} "+old_chat['content'])
-                elif old_chat['role'] == "AI":
-                    tmp.append(f"{bot}{interface} "+old_chat['content'])
+        tmp = []
+        # print(history)
+        raw_mode=False
+        for i, old_chat in enumerate(history):
+            if old_chat['role'] == "user":
+                if old_chat['content'].startswith("raw!"):
+                    raw_mode=True
+                    tmp.append(old_chat['content'])
                 else:
-                    continue
-            history='\n\n'.join(tmp)
-            state = None
-            return history
-
+                    raw_mode=False
+                    tmp.append(f"{user}{interface} "+old_chat['content'])
+            elif old_chat['role'] == "AI":
+                if raw_mode:
+                    tmp[-1]+=old_chat['content']
+                else:
+                    tmp.append(f"{answer}{interface} "+old_chat['content'])
+            else:
+                continue
+        history = '\n\n'.join(tmp)
+        return history
 
     def chat_one(prompt, history, max_length, top_p, temperature, zhishiku=False):
-        global state
         token_count = max_length
-        presencePenalty = 0.2
-        countPenalty = 0.2
-        args = PIPELINE_ARGS(temperature=max(0.2, float(temperature)), top_p=float(top_p),
-                            alpha_frequency=countPenalty,
-                            alpha_presence=presencePenalty,
-                            token_ban=[],  # ban the generation of some tokens
-                            token_stop=[0])  # stop generation whenever you see any token here
-
-        if zhishiku:
-            ctx = "\n\n"+prompt.replace('system:',
-                                        'Bob:')\
-                .replace('\n\n',"\n")+f"\n\n{bot}{interface}"
-            ctx = re.sub('网页', '', ctx)
-            ctx = re.sub('原标题：', '', ctx)
+        presencePenalty = 0.4
+        countPenalty = 0.4
+        if history is None or history == "":
+            history = ""
         else:
-            if prompt.startswith("raw!"):
-                print("RWKV raw mode!")
-                ctx=prompt.replace("raw!","")
-            else:
-                ctx = f"\n\n{user}{interface} {prompt}\n\n{bot}{interface}"
-        if settings.llm.historymode=='string':
-            ctx=history+ctx
+            history = history+'\n\n'
+        args = PIPELINE_ARGS(temperature=max(0.2, float(temperature)), top_p=float(top_p),
+                             alpha_frequency=countPenalty,
+                             alpha_presence=presencePenalty,
+                             token_ban=[],  # ban the generation of some tokens
+                             token_stop=[0])  # stop generation whenever you see any token here
+
+        if prompt.startswith("raw!"):
+            print("[raw mode]", end="")
+            ctx = prompt.replace("raw!", "")
+            ctx = re.sub('\\{user\\}',user, ctx)
+            ctx = re.sub('\\{answer\\}',answer, ctx)
+            ctx = re.sub('\\{bot\\}',answer, ctx)
+            ctx = re.sub('\\{interface\\}',interface, ctx)
+            raw_mode=True
+        else:
+            ctx = f"{user}{interface} {prompt}\n\n{answer}{interface}"
+            raw_mode=False
         # print(ctx)
-        yield str(len(ctx))+'字正在计算'
+        state = None
+        history_in_ctx=False
+        try:
+            state = states[history].get()
+            print("[match state]", end="")
+        except Exception as e:
+            ctx = history+ctx
+            history_in_ctx=True
+            print("[default stste]", end="")
+            if not raw_mode:
+                state = states['default'].get()
+            # print([history],states)
         all_tokens = []
         out_last = 0
         response = ''
         occurrence = {}
+        tokens = pipeline.encode(ctx)
+        yield str(len(ctx))+'字正在计算\n'+str(len(tokens))+" tokens"
         for i in range(int(token_count)):
-            out, state = model.forward(pipeline.encode(
-                ctx) if i == 0 else [token], state)
+            out, state = model.forward(tokens if i == 0 else [token], state)
             for n in args.token_ban:
                 out[n] = -float('inf')
             for n in occurrence:
                 out[n] -= (args.alpha_presence + occurrence[n]
-                        * args.alpha_frequency)
+                           * args.alpha_frequency)
 
             token = pipeline.sample_logits(
                 out, temperature=args.temperature, top_p=args.top_p)
@@ -222,34 +268,33 @@ else:
             tmp = pipeline.decode(all_tokens[out_last:])
             if '\ufffd' not in tmp:
                 response += tmp
-                if response.endswith('\n\n') or response.endswith(f"{user}{interface}") or response.endswith(f"{bot}{interface}"):
+                if response.endswith('\n\n') or response.endswith(f"{user}{interface}"):
                     response = remove_suffix(
-                        remove_suffix(
-                            remove_suffix(
-                                remove_suffix(response, f"{user}{interface}")
-                            , f"{bot}{interface}"),
-                        '\n'),
-                    '\n')
+                        remove_suffix(response, '\n\n'),
+                        f"{user}{interface}"
+                    )
                     break
                 # print(tmp, end='')
                 out_last = i + 1
                 yield response.strip()
-
+        yield response.strip()
+        if raw_mode:
+            if not history_in_ctx:
+                prompt=history+prompt
+            states[prompt+response.strip()+'\n\n'] = State(state)
+        else:
+            if not history_in_ctx:
+                ctx=history+ctx
+            states[ctx+' '+response.strip()+'\n\n'] = State(state)
 
     def remove_suffix(input_string, suffix):  # 兼容python3.8
         if suffix and input_string.endswith(suffix):
             return input_string[:-len(suffix)]
         return input_string
 
-
-    interface = ":"
-    user = "Bob"
-    bot = "Alice"
     pipeline = None
     PIPELINE_ARGS = None
     model = None
-    state = None
-
 
     def load_model():
         global pipeline, PIPELINE_ARGS, model
@@ -266,4 +311,16 @@ else:
         #     with torch.no_grad():
 
         from rwkv.utils import PIPELINE, PIPELINE_ARGS
-        pipeline = PIPELINE(model, "20B_tokenizer.json")
+        try:
+            pipeline = PIPELINE(model, tokenizers_file)
+
+        except:
+            print(
+                "不能使用world请更新rwkv：pip install -U rwkv -i https://mirrors.aliyun.com/pypi/simple")
+
+        out, state = model.forward(pipeline.encode(f'''{user}{interface} hi
+
+{answer}{interface} Hi. I am your assistant and I will provide expert full response in full details. Please feel free to ask any question and I will always answer it.
+
+'''), None)
+        states['default'] = State(state)

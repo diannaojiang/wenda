@@ -1,5 +1,7 @@
 bottle
-paste
+uvicorn
+websockets
+fastapi
 sqlalchemy
 sqlalchemy_utils
 transformers==4.26.1
@@ -18,3 +20,5 @@ cpm_kernels
 chardet
 rwkv
 pyyaml
+openai
+tiktoken

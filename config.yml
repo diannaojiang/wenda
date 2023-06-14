@@ -7,11 +7,11 @@ llm_type: rwkv
 #llm模型类型:glm6b、rwkv、llama、replitcode
 llm_models: 
   rwkv: 
-     path: "../Models/RWKV-4-Raven-7B-v11-Eng49%-Chn49%-Jpn1%-Other1%-20230430-ctx8192.pth"
+     path: "../Models/RWKV-4-Raven-7B-v12-Eng49%-Chn49%-Jpn1%-Other1%-20230530-ctx8192.pth"
      #rwkv模型位置"
      strategy: "cuda fp16"
      #rwkv模型参数"
-     historymode: string
+     historymode: state
      #rwkv历史记录实现方式：state、string
   szz: 
      path: "../Models/szz.pth"
@@ -60,7 +60,7 @@ llm_models:
      strategy: "cuda fp16"
     #因我的3070只有8g内存，所以是先把模理加载到内存进行精度转换，至少要32g系统内存， fp16 占用不到6g显存,fp32 超过8g未测试"
 library: 
-     strategy: "rtst:1 agents:0"
+     strategy: "calc:2 rtst:1 agents:0"
      #知识库参数，每组参数间用空格分隔，冒号前为知识库类型，后为抽取数量。
 
      #知识库类型:
@@ -101,13 +101,13 @@ librarys:
     host: "http://127.0.0.1:17860/api/find"
      #远程知识库地址地址
   rtst: 
-     count: 1
+     count: 3
      #最大抽取数量
-     size: 200
+     size: 20
      #分块大小"
-     overlap: 100
+     overlap: 0
      #分块重叠长度
-     model_path: "../Models/text2vec-large-chinese"
+     model_path: "../Models/m3e-base"
      #向量模型存储路径
      device: cuda
      #embedding运行设备

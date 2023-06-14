@@ -10,15 +10,21 @@
 // ==/UserScript==
 
 
+<<<<<<< HEAD:views/autos/1-draw_use_SD_api.js
 功能.push({
     名称: "画图",
     icon: 'draw',
     问题: async () => {
+=======
+func.push({
+    name: "画图",
+    question: async () => {
+>>>>>>> CSS:autos/1-draw_use_SD_api.js
         lsdh(false)
         zsk(false)
 
-        add_conversation("user", app.问题)
-        Q = await send("使用英语简要描述以下场景：" + app.问题, app.问题, false)
+        add_conversation("user", app.question)
+        Q = await send("使用英语简要描述以下场景：" + app.question, app.question, false)
         app.loading = true
         alert("提示词：" + Q)
         response = await fetch("/api/sd_agent", {
@@ -36,7 +42,7 @@
         })
         try {
             let json = await response.json()
-            add_conversation("AI", '![](data:image/png;base64,' + json.images[0] + ")")
+            add_conversation("AI", '![](data:image/png;base64,' + json.images[0] + ")",no_history=true)
         } catch (error) {
             alert("连接SD API失败，请确认已开启agents库，并将SD API地址设置为127.0.0.1:786")
         }
@@ -44,15 +50,21 @@
         save_history()
     },
 })
+<<<<<<< HEAD:views/autos/1-draw_use_SD_api.js
 功能.push({
     名称: "draw use SD",
     icon:'account-edit',
     问题: async () => {
+=======
+func.push({
+    name: "draw use SD",
+    question: async () => {
+>>>>>>> CSS:autos/1-draw_use_SD_api.js
         lsdh(false)
         zsk(false)
 
-        add_conversation("user", app.问题)
-        Q = app.问题
+        add_conversation("user", app.question)
+        Q = app.question
         app.loading = true
         response = await fetch("/api/sd_agent", {
             // signal: signal,
