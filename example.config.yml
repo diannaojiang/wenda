@@ -9,7 +9,7 @@ library:
 
      #知识库类型:
      #bing        cn.bing搜索，仅国内可用，目前处于服务降级状态
-     #sosowx      sogo微信公众号搜索，可配合相应auto实现全文内容分析
+     #sogowx      sogo微信公众号搜索，可配合相应auto实现全文内容分析
      #fess        fess搜索引擎
      #rtst        支持实时生成的sentence_transformers
      #remote      调用远程闻达知识库，用于集群化部署
@@ -53,17 +53,29 @@ librarys:
      #向量模型存储路径
      device: cuda
      #embedding运行设备
-  qdrant: 
+  qdrant:
+     count: 3
+     #最大抽取数量
+     size: 20
+     #分块大小
+     overlap: 0
+     #分块重叠长度
      path: txt
      #知识库文本路径
-     model_path: "model/text2vec-large-chinese"
+     model_path: "model/m3e-base"
      #向量模型存储路径
-     qdrant_host: "http://localhost:6333"
-     #qdrant服务地址"
+     #qdrant_host: "http://localhost:6333"
+     #qdrant服务地址
+     qdrant_path: "memory/q"
+     #qdrant本地目录   qdrant_path   qdrant_host  同时只能存在一个
      device: cpu
      #qdrant运行设备
+     batch_size: 32
+     #向量模型批处理大小
      collection: qa_collection
      #qdrant集合名称
+     similarity_threshold: 0.8
+     #相似度阈值
   kg: 
      count: 5
      #最大抽取数量
@@ -81,12 +93,20 @@ llm_models:
      strategy: "cuda fp16i8"
    #   path: "model/rwkv_ggml_q8.bin"           #rwkv模型位置"
    #   strategy: "Q8_0"       #rwkvcpp:运行方式，设置strategy诸如"Q8_0->16"即可开启，代表运行Q8_0模型在16个cpu核心上
+   #记得去https://github.com/saharNooby/rwkv.cpp/releases下最新版本文件替换librwkv.so或rwkv.dll
      #rwkv模型参数"
     
      historymode: state
-     #rwkv历史记录实现方式：state、string
+     #rwkv历史记录实现方式：state、string。注意，对于torch实现，本参数已弃用，因为已经实现自动切换。
+     state_source_device: cpu
+     #torch实现下，会保存每个会话的state。每个占用2M显存，本参数控制将其复制到内存以节约显存。
+     #置为cuda:0，代表state来自cuda:0，且需要将其复制到内存以节约显存。
+     #置为cuda:1，同理。
+     #置为cpu，代表不需要复制，如果使用cpu计算，或多卡计算需这么设置。
+     presence_penalty: 0.2
+     count_penalty: 0.2
   glm6b: 
-     path: "model/chatglm-6b-int4"
+     path: "model\\chatglm-6b-int4"
      #glm模型位置"
      strategy: "cuda fp16"
      #cuda fp16	 所有glm模型 要直接跑在gpu上都可以使用这个参数
@@ -95,11 +115,19 @@ llm_models:
      #cuda:0 fp16 *14 -> cuda:1	fp16 多卡流水线并行，使用方法参考RWKV的strategy介绍。总层数28
    #   lora: "model/lora-450"
      #glm-lora模型位置
+  baichuan: 
+     path: "model\\baichuan-7B"
+     #模型位置"
+   #   lora: "model/64rank"
+  aquila: #https://model.baai.ac.cn/model-detail/100101
+     path: "AquilaChat-7B" #注意没有model/
+     #模型位置"
+     strategy: "cuda fp16"
   llama: 
      path: "model/stable-vicuna-13B.ggml.q4_2.bin"
      #llama模型位置
-     strategy: ""
-     #llama模型参数 暂时不用
+   #   strategy: "Q8_0"       #cpp:运行方式，设置strategy诸如"Q8_0"即可开启
+     strategy: "cuda fp16i8"
   moss: 
      path: "model/moss-moon-003-sft-plugin-int4"
      #模型位置
@@ -111,7 +139,7 @@ llm_models:
      api_host: "http://127.0.0.1:8000/v1" #rwkv runner
      
   replitcode: 
-     path: "model/replit-code-v1-3b"
+     path: "model\\replit-code-v1-3b"
      #replitcode模型位置
      #说明：目前模型参数和chat模型差异较大，写死了，不能通过wenda界面配置，需要调整自行到llm_replitcode.py 文件中调整，或放开wenda界面参数
      #y = model.generate(x, max_length=100, do_sample=true, top_p=0.95, top_k=4, temperature=0.2, num_return_sequences=1, eos_token_id=tokenizer.eos_token_id)
@@ -126,4 +154,3 @@ llm_models:
      #return fibonacci(n-1) + fibonacci(n-2)
      #print(fibonacci(10))
      strategy: "cuda fp16"
-    #因我的3070只有8g内存，所以是先把模理加载到内存进行精度转换，至少要32g系统内存， fp16 占用不到6g显存,fp32 超过8g未测试"
