@@ -11,12 +11,15 @@ import chardet
 import os
 import sys
 import time
-os.chdir(sys.path[0][:-8])
+sys.path.append(os.getcwd())
+from plugins.common import success_print, error_print
+from plugins.common import error_helper
+from plugins.common import settings
+from plugins.common import CounterLock
 
-from common import success_print, error_print
-from common import error_helper
-from common import settings
-from common import CounterLock
+import torch
+torch.set_num_threads(4)
+
 if settings.librarys.rtst.backend=="Annoy":
     from langchain.vectorstores.annoy import Annoy as Vectorstore
 else:
@@ -38,7 +41,7 @@ model_path = settings.librarys.rtst.model_path
 try:
     embeddings = HuggingFaceEmbeddings(model_name='')
     embeddings.client = sentence_transformers.SentenceTransformer(
-        model_path, device="cuda")
+        model_path, device="cpu")
 except Exception as e:
     error_helper("embedding加载失败，请下载相应模型",
                  r"https://github.com/l15y/wenda#st%E6%A8%A1%E5%BC%8F")

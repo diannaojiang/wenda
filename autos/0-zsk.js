@@ -28,7 +28,7 @@ get_url_form_md = (s) => {
 window.answer_with_zsk = async (Q) => {
     // lsdh(false)
     app.chat.push({ "role": "user", "content": Q })
-    kownladge = (await find(Q, 5)).map(i => ({
+    kownladge = (await find(Q, 5)).filter(i=>!i.score||i.score<120).map(i => ({
         title: get_title_form_md(i.title),
         url: get_url_form_md(i.title),
         content: i.content
@@ -65,35 +65,33 @@ window.answer_with_zsk = async (Q) => {
 func.push({
     name: "知识库",
     description: "通过知识库回答问题",
-    question: async () => {
-        answer_with_zsk(app.question)
+    question: async (Q) => {
+        answer_with_zsk(Q)
     }
 })
-
+window.answer_with_fast_zsk = async (Q) => {
+    // lsdh(false)
+    kownladge = (await find(Q, app.zsk_step)).filter(i=>!i.score||i.score<120).map(i => ({
+        title: get_title_form_md(i.title),
+        url: get_url_form_md(i.title),
+        content: i.content
+    }))
+    if (kownladge.length > 0) {
+        let prompt = app.zsk_answer_prompt + '\n' +
+            kownladge.map((e, i) => i + 1 + "." + e.content).join('\n') + "\n问题：" + Q
+        return await send(prompt, keyword = Q, show = true, sources = kownladge)
+    } else {
+        app.chat.pop()
+        sources = [{
+            title: '未匹配到知识库',
+            content: '本次对话内容完全由模型提供'
+        }]
+        return await send(Q, keyword = Q, show = true, sources = sources)
+    }
+}
 func.push({
     name: "快速知识库",
-    question: async () => {
-        let Q = app.question
-
-        // lsdh(false)
-        kownladge = (await find(Q, app.zsk_step)).map(i => ({
-            title: get_title_form_md(i.title),
-            url: get_url_form_md(i.title),
-            content: i.content
-        }))
-        if (kownladge.length > 0) {
-            let prompt = app.zsk_answer_prompt + '\n' +
-                kownladge.map((e, i) => i + 1 + "." + e.content).join('\n') + "\n问题：" + Q
-            await send(prompt, keyword = Q, show = true, sources = kownladge)
-        } else {
-            app.chat.pop()
-            sources = [{
-                title: '未匹配到知识库',
-                content: '本次对话内容完全由模型提供'
-            }]
-            return await send(Q, keyword = Q, show = true, sources = sources)
-        }
-    }
+    question: window.answer_with_fast_zsk
 }
 )
 if (app.llm_type == "rwkv") {
