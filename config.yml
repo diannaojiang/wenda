@@ -7,7 +7,7 @@ llm_type: rwkv
 #llm模型类型:glm6b、rwkv、llama、replitcode
 llm_models: 
   rwkv: 
-     path: "../Models/RWKV-4-Raven-7B-v12-Eng49%-Chn49%-Jpn1%-Other1%-20230530-ctx8192.pth"
+     path: "../Models/RWKV-4-World-7B-v1-20230626-ctx4096.pth"
      #rwkv模型位置"
      strategy: "cuda fp16"
      #rwkv模型参数"
@@ -21,7 +21,7 @@ llm_models:
      historymode: string
      #rwkv历史记录实现方式：state、string
   glm6b: 
-     path: "../Models/chatglm-6b"
+     path: "../Models/chatglm2-6b"
      #glm模型位置"
      strategy: "cuda fp16"
      #cuda fp16	 所有glm模型 要直接跑在gpu上都可以使用这个参数
