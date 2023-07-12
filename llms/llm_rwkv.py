@@ -8,8 +8,14 @@ import math
 import re
 from typing import List,Dict
 interface = ":"
-if settings.llm.path.lower().find("world") > -1:
-    print("rwkv world mode!")
+if settings.llm.path.lower().find("chntuned") > -1:
+    print("RWKV CHNtuned mode")
+    tokenizers_type = "world"
+    user = "User"
+    answer = "Assistant"
+    tokenizers_file = "rwkv_vocab_v20230424"
+elif settings.llm.path.lower().find("world") > -1:
+    print("RWKV world mode")
     tokenizers_type = "world"
     user = "Question"
     answer = "Answer"
@@ -250,9 +256,9 @@ else:
             # print([history],states)
         all_tokens = []
         out_last = 0
-        response = ''
         occurrence = {}
         tokens = pipeline.encode(ctx)
+        response = ''
         yield str(len(ctx))+'字正在计算\n'+str(len(tokens))+" tokens"
         for i in range(int(token_count)):
             out, state = model.forward(tokens if i == 0 else [token], state)
@@ -267,6 +273,8 @@ else:
             if token in args.token_stop:
                 break
             all_tokens += [token]
+            for occurrence_i in occurrence:
+                occurrence[occurrence_i]*=0.996
             if token not in occurrence:
                 occurrence[token] = 1
             else:
