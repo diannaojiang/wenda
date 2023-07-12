@@ -46,8 +46,16 @@ def load_model():
     if len(s)>1:
         from accelerate import dispatch_model
         start_device = int(s[0][0].split(':')[1])
-        device_map = {'transformer.word_embeddings': start_device,
-                  'transformer.final_layernorm': start_device, 'lm_head': start_device}
+        #根据路径名判断，如果是glm2则使用专用devicemap，参见https://github.com/THUDM/ChatGLM2-6B/blob/main/utils.py Line23
+        if "chatglm2" in settings.llm.path.lower():
+            device_map = {'transformer.embedding.word_embeddings': 0,
+            'transformer.encoder.final_layernorm': 0,
+            'transformer.output_layer': 0,
+            'transformer.rotary_pos_emb': 0,
+            'lm_head': 0}
+        else:
+            device_map = {'transformer.word_embeddings': start_device,
+            'transformer.final_layernorm': start_device, 'lm_head': start_device}
         
         n = {}
         for i in range(len(s)):
@@ -61,17 +69,18 @@ def load_model():
         n[start_device] -= 2
         n = dict_to_list(n)
         for i in range(num_trans_layers):
-            device_map[f'transformer.layers.{i}'] = n[i]
+            #根据路径名判断，如果是glm2则使用专用devicemap，参见https://github.com/THUDM/ChatGLM2-6B/blob/main/utils.py Line23
+            if "chatglm2" in settings.llm.path.lower():
+                device_map[f'transformer.encoder.layers.{i}'] = n[i]
+            else:
+                device_map[f'transformer.layers.{i}'] = n[i]
 
     device, precision = s[0][0], s[0][1]
     
     tokenizer = AutoTokenizer.from_pretrained(
         settings.llm.path, local_files_only=True, trust_remote_code=True,revision="v1.1.0")
-    if "chatglm2" in settings.llm.path:
-        model = AutoModel.from_pretrained(settings.llm.path, local_files_only=True, trust_remote_code=True, device=device, revision="v1.1.0")
-    else:
-        model = AutoModel.from_pretrained(settings.llm.path, local_files_only=True, trust_remote_code=True, revision="v1.1.0")
-
+    model = AutoModel.from_pretrained(
+        settings.llm.path, local_files_only=True, trust_remote_code=True, revision="v1.1.0")
     if not (settings.llm.lora == '' or settings.llm.lora == None):
         print('Lora模型地址', settings.llm.lora)
         from peft import PeftModel
@@ -84,7 +93,9 @@ def load_model():
     elif device == 'cuda':
         # 如果是gpu，把模型移动到显卡
         import torch
-        if not (precision.startswith('fp16i') and torch.cuda.get_device_properties(0).total_memory < 1.4e+10):
+        if "chatglm2" in settings.llm.path and "int4" in settings.llm.path:
+            model = model.cuda()
+        elif not (precision.startswith('fp16i') and torch.cuda.get_device_properties(0).total_memory < 1.4e+10):
             model = model.cuda()
     elif len(s)>1 and device.startswith('cuda:'):
         pass
