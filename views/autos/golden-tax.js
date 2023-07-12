@@ -1,5 +1,5 @@
 
-window._golden_tax_url = 'http://114.246.84.186:17860' //'http://39.130.240.104:8091' //
+window._golden_tax_url = 'http://39.130.240.104:8091' //
 app.plugins.push({ icon: 'gold', url: "http://39.130.240.104:8091/shuiwu/zhenzhu/#/" })
 // chrome://flags/#unsafely-treat-insecure-origin-as-secure
 app.golden_tax_faqs = [

@@ -1,4 +1,4 @@
-window._base_url = '114.249.1.163:17861' //114.246.84.186:17860 // 'http://114.249.5.115:17860'  // 'http://10.37.41.39:17860' //  'http://10.37.41.123:17860' // 'http://114.249.14.74:17860'
+window._base_url = '10.37.41.245:17861' //114.246.84.186:17860 // 'http://114.249.5.115:17860'  // 'http://10.37.41.39:17860' //  'http://10.37.41.123:17860' // 'http://114.249.14.74:17860'
 window._autos_js_loaded =  [
     'golden-tax',
     '0-write_article',
@@ -7,7 +7,8 @@ window._autos_js_loaded =  [
     '1常用',
     // '2-闻达笔记',
     // 'block_programming',
-    // 'example：猫娘+语音_js',
+    '人物卡',
+    'few-shot',
     // 'face-recognition',
     // 'github-discussion',
     // 'memory_improve',

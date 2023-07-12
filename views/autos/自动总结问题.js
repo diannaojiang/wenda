@@ -47,7 +47,7 @@ f_自动总结问题_打开 = async () => {
     await new Promise(resolve => {
         let input = document.createElement('input')
         input.type = 'file'
-        input.accept = '.txt'
+        input.accept = '.json'
         input.onchange = function () {
             var file = input.files[0];
             var reader = new FileReader();
