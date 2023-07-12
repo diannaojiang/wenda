@@ -48,7 +48,7 @@ llm_models:
       strategy: "cuda fp16"
       #llama模型参数 暂时不用
    aquila: #https://model.baai.ac.cn/model-detail/100101
-      path: "../Models/AquilaChat-7B" #注意没有model/
+      path: "../Models/AquilaChat-7B" 
       #模型位置"
       strategy: "cuda fp16"
    moss: 
