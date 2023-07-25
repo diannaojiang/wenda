@@ -23,7 +23,7 @@ llm_models:
       #置为cpu，代表不需要复制，如果使用cpu计算，或多卡计算需这么设置。
       presence_penalty: 0.2
       count_penalty: 0.2
-   szz: 
+   cbm: 
       path: "../Models/szz.pth"
       #rwkv模型位置"
       strategy: "cuda fp16i8"
