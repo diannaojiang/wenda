@@ -62,13 +62,13 @@ window.answer_with_zsk = async (Q) => {
         return await send(Q, keyword = Q, show = true, sources = sources)
     }
 }
-func.push({
-    name: "知识库",
-    description: "通过知识库回答问题",
-    question: async () => {
-        answer_with_zsk(app.question)
-    }
-})
+// func.push({
+//     name: "知识库",
+//     description: "通过知识库回答问题",
+//     question: async () => {
+//         answer_with_zsk(app.question)
+//     }
+// })
 
 func.push({
     name: "快速知识库",

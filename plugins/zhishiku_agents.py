@@ -19,6 +19,22 @@ def api_find():
     r = response.text
     return r
 
+@route('/lxAuditWorkItemByAi', method=("POST","OPTIONS"))
+def api_find():
+    allowCROS()
+    url = "http://10.3.58.18:6081"
+    response = requests.post(url=f'{url}/slwcsspm/rest/LXAudit/v1/lxAuditWorkItemByAi', json=request.json, proxies=proxies)
+    r = response.text
+    return r
+
+@route('/addWorkItemInfoByAi', method=("POST","OPTIONS"))
+def api_find():
+    allowCROS()
+    url = "http://10.3.58.18:6081"
+    response = requests.post(url=f'{url}/slwcsspm/rest/workItem/addWorkItemInfoByAi', json=request.json, proxies=proxies)
+    r = response.text
+    return r
+
 @route('/webhook/event', method=("POST"))#webhook
 def api_find():
     print(request.json)

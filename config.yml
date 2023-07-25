@@ -1,5 +1,5 @@
 
-logging: False
+logging: True
 #日志"
 port: 17860
 #webui 默认启动端口号"
@@ -8,7 +8,7 @@ llm_type: rwkv
 llm_models: 
    rwkv: 
       path: "../Models/RWKV-4-World-CHNtuned-7B-v1-20230709-ctx4096.pth"
-      strategy: "cuda fp16i8"
+      strategy: "cuda fp16i8 *32 -> cuda fp16"
       #   path: "model/rwkv_ggml_q8.bin"           #rwkv模型位置"
       #   strategy: "Q8_0"       #rwkvcpp:运行方式，设置strategy诸如"Q8_0->16"即可开启，代表运行Q8_0模型在16个cpu核心上
       #记得去https://github.com/saharNooby/rwkv.cpp/releases下最新版本文件替换librwkv.so或rwkv.dll
@@ -33,7 +33,7 @@ llm_models:
    glm6b: 
       path: "../Models/chatglm2-6b"
       #glm模型位置"
-      strategy: "cuda fp16i4"
+      strategy: "cuda fp16"
       #cuda fp16	 所有glm模型 要直接跑在gpu上都可以使用这个参数
       #cuda fp16i8	 fp16原生模型 要自行量化为int8跑在gpu上可以使用这个参数
       #cuda fp16i4	 fp16原生模型 要自行量化为int4跑在gpu上可以使用这个参数
@@ -74,7 +74,7 @@ llm_models:
       strategy: "cuda fp16"
       #因我的3070只有8g内存，所以是先把模理加载到内存进行精度转换，至少要32g系统内存， fp16 占用不到6g显存,fp32 超过8g未测试"
 library: 
-     strategy: "calc:2 rtst:1 agents:0"
+     strategy: "calc:2 kg:1 rtst:1 agents:0"
      #知识库参数，每组参数间用空格分隔，冒号前为知识库类型，后为抽取数量。
 
      #知识库类型:

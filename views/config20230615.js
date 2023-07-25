@@ -9,6 +9,7 @@ window._autos_js_loaded =  [
     // 'block_programming',
     '人物卡',
     'few-shot',
+    'kg-zsk',
     // 'face-recognition',
     // 'github-discussion',
     // 'memory_improve',
