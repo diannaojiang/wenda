@@ -1,6 +1,8 @@
 
-logging: False
+logging: True
 #日志"
+logging_path: "sqlite:///../record.db?check_same_thread=False"
+# 日志地址 可以连接远程mysql服务器：'mysql+pymysql://root:123456@localhost:3306/db?charset=utf8'
 port: 17860
 #webui 默认启动端口号"
 llm_type: rwkv
