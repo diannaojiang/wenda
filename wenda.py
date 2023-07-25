@@ -19,9 +19,6 @@ from plugins.common import error_helper, error_print, success_print
 from plugins.common import allowCROS
 from plugins.common import settings
 from plugins.common import app
-
-from replace_response import check_response, LicenseCheckTask
-
 import logging
 logging.captureWarnings(True)
 logger = None
@@ -187,7 +184,8 @@ def api_chat_box():
     from websocket import create_connection
     ws = create_connection("ws://127.0.0.1:"+str(settings.port)+"/ws")
     ws.send(json.dumps(data))
-    if(not stream or stream):
+    if not stream:
+        response.content_type = "application/json"
         temp_result = ''
         try:
             while True:
@@ -196,7 +194,7 @@ def api_chat_box():
                     temp_result = result
         except:
             pass
-        yield "data: %s\n\n" % json.dumps({"response": temp_result})
+        yield json.dumps({"response": temp_result})
 
     else:
         try:
