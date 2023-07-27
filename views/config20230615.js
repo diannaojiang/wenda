@@ -2,7 +2,7 @@ window._base_url = '10.37.41.245:17861' //114.246.84.186:17860 // 'http://114.24
 window._autos_js_loaded =  [
     'golden-tax',
     '0-write_article',
-    '0-zsk',
+    // '0-zsk',
     '1-draw_use_SD_api',
     '1常用',
     // '2-闻达笔记',
@@ -10,6 +10,7 @@ window._autos_js_loaded =  [
     '人物卡',
     'few-shot',
     'kg-zsk',
+    'proj-manager',
     // 'face-recognition',
     // 'github-discussion',
     // 'memory_improve',

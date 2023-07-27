@@ -1,3 +1,19 @@
+get_title_form_md = (s) => {
+    console.log(s)
+    try {
+        return s.match('\\[(.+)\\]')[1]
+    } catch {
+        return s
+    }
+}
+get_url_form_md = (s) => {
+    console.log(s)
+    try {
+        return s.match('\\((.+)\\)')[1]
+    } catch {
+        return s
+    }
+}
 window.answer_with_kg = async (Q) => {
     // lsdh(false)
     app.chat = [{ "role": "user", "content": "从以下语句中抽取出关键词：处级的领导都有哪些？" },
@@ -38,10 +54,11 @@ window.answer_with_kg = async (Q) => {
         //         kownladge[i].content + "\n问题：" + Q
         //     result.push(await send(prompt, keyword = Q, show = false))
         // }
-        kg_content = kownladge[0].content
-        var arr = kg_content.split("\n"); // 按照回车符分割字符串，得到一个数组
-        var result = arr.slice(0, 5); // 取数组的前五个元素，得到一个新的数组
-        var kg_content = result.join("\n"); 
+        console.log(kownladge)
+        var kg_content = kownladge[0].content
+        // var result = kg_content.split("\n"); // 按照回车符分割字符串，得到一个数组
+        // result = result.slice(0, 6); // 取数组的前五个元素，得到一个新的数组
+        // kg_content = result.join("\n"); 
         // app.chat.push({ "role": "AI", "content": kg_content })
         let prompt = "根据提供信息回答问题。" + '\n' + kg_content + "\n问题：" + Q
         // let prompt = "Answer the questions based only on the table below." + '\n' + kg_content + "\nQuestion：" + Q
