@@ -11,6 +11,7 @@ window._autos_js_loaded =  [
     'few-shot',
     'kg-zsk',
     'proj-manager',
+    'tjga',
     // 'face-recognition',
     // 'github-discussion',
     // 'memory_improve',
