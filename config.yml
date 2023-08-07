@@ -123,7 +123,7 @@ librarys:
      #分块大小"
      overlap: 20
      #分块重叠长度
-     model_path: "../Models/m3e-base"
+     model_path: "../Models/bge-large-zh"
      #向量模型存储路径
      device: cuda
      #embedding运行设备
