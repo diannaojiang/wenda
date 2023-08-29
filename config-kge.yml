@@ -1,0 +1,99 @@
+
+logging: True
+#日志"
+logging_path: "sqlite:///../record.db?check_same_thread=False"
+# 日志地址 可以连接远程mysql服务器：'mysql+pymysql://root:123456@localhost:3306/db?charset=utf8'
+port: 2210
+#webui 默认启动端口号"
+llm_type: rwkv
+#llm模型类型:glm6b、rwkv、llama、replitcode
+llm_models: 
+   rwkv: 
+      path: "../Models/KG/RWKV-KG-7B-World-CHNtuned-64K-last.pth"
+      strategy: "cuda:0 fp16i8 *16 -> cuda:1 fp16i8"
+      #   path: "model/rwkv_ggml_q8.bin"           #rwkv模型位置"
+      #   strategy: "Q8_0"       #rwkvcpp:运行方式，设置strategy诸如"Q8_0->16"即可开启，代表运行Q8_0模型在16个cpu核心上
+      #记得去https://github.com/saharNooby/rwkv.cpp/releases下最新版本文件替换librwkv.so或rwkv.dll
+      #rwkv模型参数"
+
+      historymode: state
+      #rwkv历史记录实现方式：state、string。注意，对于torch实现，本参数已弃用，因为已经实现自动切换。
+      state_source_device: cpu
+      #torch实现下，会保存每个会话的state。每个占用2M显存，本参数控制将其复制到内存以节约显存。
+      #置为cuda:0，代表state来自cuda:0，且需要将其复制到内存以节约显存。
+      #置为cuda:1，同理。
+      #置为cpu，代表不需要复制，如果使用cpu计算，或多卡计算需这么设置。
+      presence_penalty: 0
+      count_penalty: 0
+library: 
+     strategy: "calc:2 agents:0"
+     #知识库参数，每组参数间用空格分隔，冒号前为知识库类型，后为抽取数量。
+
+     #知识库类型:
+     #bing        cn.bing搜索，仅国内可用，目前处于服务降级状态
+     #sosowx      sogo微信公众号搜索，可配合相应auto实现全文内容分析
+     #fess        fess搜索引擎
+     #rtst        支持实时生成的sentence_transformers
+     #remote      调用远程闻达知识库，用于集群化部署
+     #kg          知识图谱,暂未启用
+     #特殊库：
+     #mix         根据参数进行多知识库融合
+     #agents      提供网络资源代理，没有知识库查找功能，所以数量为0
+     #            （目前stable-diffusion的auto脚本需要使用其中功能，同时需开启stable-diffusion的api功能）
+
+     count: 1
+     #最大抽取数量（所有知识库总和）
+
+     show_soucre: true
+     #知识库显示来源
+
+     step: 0
+     #知识库默认上下文步长
+librarys: 
+  bing: 
+    count: 5
+     #最大抽取数量
+  bingsite: 
+     count: 5
+     #最大抽取数量
+     site: "www.12371.cn"
+     #搜索网站
+  fess: 
+     count: 1
+     #最大抽取数量
+     fess_host: "127.0.0.1:8080"
+     #fess搜索引擎的部署地址
+  remote: 
+    host: "http://127.0.0.1:17860/api/find"
+     #远程知识库地址地址
+  rtst: 
+     count: 10
+     #最大抽取数量
+     size: 100
+     #分块大小"
+     overlap: 20
+     #分块重叠长度
+     model_path: "../Models/m3e-base"
+     #向量模型存储路径
+     device: cuda
+     #embedding运行设备
+  qdrant: 
+     path: txt
+     #知识库文本路径
+     model_path: "../Models/text2vec-large-chinese"
+     #向量模型存储路径
+     qdrant_host: "http://localhost:6333"
+     #qdrant服务地址"
+     device: cpu
+     #qdrant运行设备
+     collection: qa_collection
+     #qdrant集合名称
+  kg: 
+     count: 5
+     #最大抽取数量
+     knowledge_path: ""
+     #知识库的文件夹目录名称，若留空则为txt
+     graph_host: ""
+     #图数据库部署地址
+     model_path: ""
+     #信息抽取模型所在路径"
