@@ -1,17 +1,19 @@
-window._base_url = '10.37.41.245:17861' //114.246.84.186:17860 // 'http://114.249.5.115:17860'  // 'http://10.37.41.39:17860' //  'http://10.37.41.123:17860' // 'http://114.249.14.74:17860'
+window._base_url = '10.37.41.247' // '114.249.1.163:17861' //114.246.84.186:17860 // 'http://114.249.5.115:17860'  // 'http://10.37.41.39:17860' //  'http://10.37.41.123:17860' // 'http://114.249.14.74:17860'
 window._autos_js_loaded =  [
-    'golden-tax',
+    // 'golden-tax',
     '0-write_article',
-    // '0-zsk',
+    'kg-zsk',
     '1-draw_use_SD_api',
     '1常用',
+    'feendback',
+    'few-shot',
+    'tjga',
+    '人物卡',
+    'real_time_upload_st_zsk',
+    // 'gxb_kf',
     // '2-闻达笔记',
     // 'block_programming',
-    '人物卡',
-    'few-shot',
-    'kg-zsk',
-    'proj-manager',
-    'tjga',
+    // 'example：猫娘+语音_js',
     // 'face-recognition',
     // 'github-discussion',
     // 'memory_improve',
@@ -19,7 +21,7 @@ window._autos_js_loaded =  [
     // 'real_time_upload_st_zsk'
     // 'speech_improve'
 ]
-_hidden_func_in_menus = ['知识库']
+_hidden_func_in_menus = ['知识库','快速知识库','1快速知识库','draw use SD']
 _menu_icon_func = {
     '根据标题写论文':'format-header-1',
     '根据提纲写论文': 'subtitles-outline',

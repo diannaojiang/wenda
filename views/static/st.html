@@ -32,13 +32,28 @@
 			margin: 20px;
 			padding: 10px;
 		}
+
+		.v-card__actions .v-btn{
+			margin-bottom: 20px;
+		}
+
+		@media screen and (max-width:540px) {
+			.v-application--wrap {
+				margin: 0;
+			}
+
+			.v-sheet.v-card {
+				margin: 10px;
+				padding: 8px;
+			}
+		}
 	</style>
 </head>
 
 <body>
 	<div id="app" v-cloak>
 		<v-app>
-			<h1>向量知识库管理工具</h1>
+			<h2 style="padding-left:20px;color:#666;">向量知识库管理工具</h2>
 			<v-card elevation="2">
 				<v-card-title>知识库选择和管理</v-card-title>
 				<v-divider></v-divider><br>
@@ -52,7 +67,7 @@
 					</v-row>
 				</v-card-text>
 				<v-card-actions>
-					<v-btn color="purple" dark size="x-large" @click="save_rtst()">
+					<v-btn :color="color" dark size="x-large" @click="save_rtst()">
 						{{$t("save_to_disk")}}
 					</v-btn>
 				</v-card-actions>
@@ -65,17 +80,17 @@
 					<v-data-table :headers="[{ text: '问题', value: '问题' },{ text: '回答', value: '回答' }]"
 						:items="l表格读取结果"></v-data-table>
 				</v-card-text>
-				<v-card-actions>
-					<v-btn color="purple" dark size="x-large" @click="f载入表格()">
+				<v-card-actions class="d-flex flex-wrap align-center">
+					<v-btn :color="color" dark size="x-large" @click="f载入表格()">
 						载入表格
 					</v-btn>
-					<v-btn color="purple" dark size="x-large" @click="f载入自动总结问题json()">
+					<v-btn :color="color" dark size="x-large" @click="f载入自动总结问题json()">
 						载入问题JSON
 					</v-btn>
-					<v-btn color="purple" dark size="x-large" @click="f保存自动总结问题()">
+					<v-btn :color="color" dark size="x-large" @click="f保存自动总结问题()">
 						保存问题为表格
 					</v-btn>
-					<v-btn color="purple" dark size="x-large" @click="f批量上传()" :loading="b批量上传中">
+					<v-btn :color="color" dark size="x-large" @click="f批量上传()" :loading="b批量上传中">
 						{{$t("upload")}}
 
 					</v-btn><template v-if="b批量上传中">{{i批量上传进度}}/{{l表格读取结果.length}}</template>
@@ -100,7 +115,7 @@
 						:items="zhishiku" hide-default-footer></v-data-table>
 				</v-card-text>
 				<v-card-actions>
-					<v-btn color="purple" dark size="x-large"
+					<v-btn :color="color" dark size="x-large"
 						@click="find_in_memory(test_zsk_prompt,test_zsk_step,memory_name)">
 						查询
 					</v-btn>
@@ -121,7 +136,7 @@
 					</v-row>
 				</v-card-text>
 				<v-card-actions>
-					<v-btn color="purple" dark size="x-large" @click="upload_rtst_zhishiku(title,content)">
+					<v-btn :color="color" dark size="x-large" @click="upload_rtst_zhishiku(title,content)">
 						{{$t("upload")}}
 					</v-btn>
 				</v-card-actions>
@@ -151,6 +166,7 @@
 			data: () => ({
 				content: '',
 				title: '',
+				color: '#0077F1',
 				memory_name: 'default',
 				test_zsk_prompt: "",
 				test_zsk_step: 1,

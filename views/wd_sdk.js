@@ -1,4 +1,4 @@
-llm_server = location.origin.replace("http", "ws")
+llm_server = location.hostname==='localhost'? `ws://${_base_url}` : location.origin.replace("http", "ws")
 global_onmessage = undefined
 send_raw = async (prompt, keyword, QA_history, onmessage = alert, addition_args = {}) => {
     let result = ''
@@ -18,7 +18,11 @@ send_raw = async (prompt, keyword, QA_history, onmessage = alert, addition_args 
             history: QA_history
         })
         ws.onopen = function () {
-            ws.send(JSON.stringify(addition_args))
+            try {
+                ws.send(JSON.stringify(addition_args))
+            } catch (error) {
+                
+            }
         };
         ws.onclose = function () {
             resolve();
